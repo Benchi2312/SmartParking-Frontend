@@ -1,0 +1,295 @@
+<div class="user-layout">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-badge">SP</div>
+      <div>
+        <h2>Smart Parking</h2>
+        <p>Portal del residente</p>
+      </div>
+    </div>
+
+    <nav class="menu">
+      <a
+        [routerLink]="['/user']"
+        fragment="dashboard"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        [class.active]="activeSection === 'dashboard'"
+        (click)="setSection('dashboard')"
+      >
+        Dashboard
+      </a>
+
+      <a
+        [routerLink]="['/user']"
+        fragment="vehiculo"
+        routerLinkActive="active"
+        [class.active]="activeSection === 'vehiculo'"
+        (click)="setSection('vehiculo')"
+      >
+        Mi Vehiculo
+      </a>
+
+      <a
+        [routerLink]="['/user']"
+        fragment="espacio"
+        routerLinkActive="active"
+        [class.active]="activeSection === 'espacio'"
+        (click)="setSection('espacio')"
+      >
+        Mi Espacio
+      </a>
+
+      <a
+        [routerLink]="['/user']"
+        fragment="historial"
+        routerLinkActive="active"
+        [class.active]="activeSection === 'historial'"
+        (click)="setSection('historial')"
+      >
+        Historial
+      </a>
+
+      <button type="button" class="logout-button" (click)="logout()">
+        Cerrar sesion
+      </button>
+    </nav>
+  </aside>
+
+  <main class="main-content">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Vista de usuario final</p>
+        <h1>{{ sectionTitle }}</h1>
+        <p class="subtitle">{{ sectionSubtitle }}</p>
+      </div>
+
+      <div class="profile-card">
+        <div class="profile-avatar">{{ profileInitials }}</div>
+        <div>
+          <strong>{{ userName }}</strong>
+          <span>Residente activo</span>
+        </div>
+      </div>
+    </header>
+
+    <section class="hero-panel">
+      <div class="hero-copy">
+        <p class="hero-label">Gestion personal</p>
+        <h2>Todo tu estacionamiento en un solo lugar</h2>
+        <p>
+          Consulta tu vehiculo, valida tu espacio asignado y revisa tus movimientos
+          recientes con una experiencia clara y rapida.
+        </p>
+      </div>
+
+      <div class="hero-stats">
+        <div class="mini-stat">
+          <span>Espacio asignado</span>
+          <strong>{{ parkingSpace?.numero || 'Sin espacio' }}</strong>
+        </div>
+        <div class="mini-stat success">
+          <span>Estado actual</span>
+          <strong>{{ parkingSpace?.estado || 'Sin datos' }}</strong>
+        </div>
+      </div>
+    </section>
+
+    <p *ngIf="loading">Cargando informacion...</p>
+    <p *ngIf="error">{{ error }}</p>
+
+    <section class="content-area" *ngIf="activeSection === 'dashboard'">
+      <div class="summary-grid">
+        <article class="summary-card">
+          <div class="summary-icon blue"></div>
+          <p>Vehiculos registrados</p>
+          <h3>{{ vehiculos.length }}</h3>
+          <span>{{ vehicle?.placa || 'Sin placa principal' }}</span>
+        </article>
+
+        <article class="summary-card">
+          <div class="summary-icon green"></div>
+          <p>Espacios disponibles</p>
+          <h3>{{ espacios.length }}</h3>
+          <span>{{ parkingSpace?.numero || 'Sin espacios registrados' }}</span>
+        </article>
+
+        <article class="summary-card">
+          <div
+            class="summary-icon"
+            [class.green]="parkingStatusTone === 'available'"
+            [class.blue]="parkingStatusTone === 'occupied'"
+          ></div>
+          <p>Reservas</p>
+          <h3>{{ reservas.length }}</h3>
+          <span>Historial real del backend</span>
+        </article>
+      </div>
+
+      <div class="dashboard-grid">
+        <article class="panel-card highlight-card">
+          <div class="panel-header">
+            <div>
+              <p class="panel-label">Resumen del vehiculo</p>
+              <h3>{{ vehicle?.placa || 'Sin vehiculo' }}</h3>
+            </div>
+            <span class="status-pill active">{{ vehicle ? 'Activo' : 'Sin datos' }}</span>
+          </div>
+
+          <div class="detail-list">
+            <div>
+              <span>Marca</span>
+              <strong>{{ vehicle?.marca || '-' }}</strong>
+            </div>
+            <div>
+              <span>Modelo</span>
+              <strong>{{ vehicle?.modelo || '-' }}</strong>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel-card">
+          <div class="panel-header">
+            <div>
+              <p class="panel-label">Espacio asignado</p>
+              <h3>{{ parkingSpace?.numero || 'Sin espacio' }}</h3>
+            </div>
+            <span
+              class="status-pill"
+              [class.available]="parkingStatusTone === 'available'"
+              [class.occupied]="parkingStatusTone === 'occupied'"
+            >
+              {{ parkingSpace?.estado || 'Sin datos' }}
+            </span>
+          </div>
+
+          <p class="panel-text">
+            La informacion de espacios se obtiene directamente del backend.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-area" *ngIf="activeSection === 'vehiculo'">
+      <app-list-vehiculos></app-list-vehiculos>
+    </section>
+
+    <section class="content-area" *ngIf="activeSection === 'espacio'">
+      <article class="panel-card full-width">
+        <div class="panel-header">
+          <div>
+            <p class="panel-label">Mi Espacio</p>
+            <h3>Asignacion actual</h3>
+          </div>
+          <span
+            class="status-pill"
+            [class.available]="parkingStatusTone === 'available'"
+            [class.occupied]="parkingStatusTone === 'occupied'"
+          >
+            {{ parkingSpace?.estado || 'Sin datos' }}
+          </span>
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Numero</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let espacio of espacios">
+                <td>{{ espacio.numero }}</td>
+                <td>{{ espacio.estado }}</td>
+              </tr>
+              <tr *ngIf="espacios.length === 0">
+                <td colspan="2">No hay espacios registrados</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <section class="content-area" *ngIf="activeSection === 'historial'">
+      <article class="panel-card full-width">
+        <div class="panel-header">
+          <div>
+            <p class="panel-label">Nueva reserva</p>
+            <h3>Crear reserva</h3>
+          </div>
+        </div>
+
+        <form class="reservation-form" [formGroup]="reservaForm" (ngSubmit)="crearReserva()">
+          <label>
+            <span>Fecha</span>
+            <input type="date" formControlName="fecha" [min]="today">
+            <small class="field-error" *ngIf="hasReservaError('fecha', 'required')">La fecha es obligatoria</small>
+            <small class="field-error" *ngIf="hasReservaError('fecha', 'pattern')">Usa el formato YYYY-MM-DD</small>
+          </label>
+
+          <label>
+            <span>Vehiculo</span>
+            <select formControlName="vehiculoId">
+              <option [ngValue]="null">Selecciona un vehiculo</option>
+              <option *ngFor="let vehiculo of vehiculos" [ngValue]="vehiculo.id">
+                {{ vehiculo.placa }} - {{ vehiculo.marca }} {{ vehiculo.modelo }}
+              </option>
+            </select>
+            <small class="field-error" *ngIf="hasReservaError('vehiculoId', 'required')">El vehiculo es obligatorio</small>
+          </label>
+
+          <label>
+            <span>Estado</span>
+            <select formControlName="estado">
+              <option value="PENDIENTE">PENDIENTE</option>
+              <option value="CONFIRMADA">CONFIRMADA</option>
+              <option value="CANCELADA">CANCELADA</option>
+            </select>
+            <small class="field-error" *ngIf="hasReservaError('estado', 'required')">El estado es obligatorio</small>
+          </label>
+
+          <button type="submit" class="reservation-submit" [disabled]="reservaSaving || vehiculos.length === 0">
+            {{ reservaSaving ? 'Creando...' : 'Crear reserva' }}
+          </button>
+        </form>
+
+        <p class="form-message success" *ngIf="reservaSuccess">{{ reservaSuccess }}</p>
+        <p class="form-message error" *ngIf="reservaError">{{ reservaError }}</p>
+        <p class="form-message" *ngIf="vehiculos.length === 0">Registra un vehiculo antes de crear una reserva.</p>
+      </article>
+
+      <article class="panel-card full-width">
+        <div class="panel-header">
+          <div>
+            <p class="panel-label">Historial</p>
+            <h3>Movimientos recientes</h3>
+          </div>
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Estado</th>
+                <th>Vehiculo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let reserva of reservas">
+                <td>{{ reserva.fecha }}</td>
+                <td>{{ reserva.estado }}</td>
+                <td>{{ reserva.vehiculo?.placa || '-' }}</td>
+              </tr>
+              <tr *ngIf="reservas.length === 0">
+                <td colspan="3">No hay reservas registradas</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+  </main>
+</div>

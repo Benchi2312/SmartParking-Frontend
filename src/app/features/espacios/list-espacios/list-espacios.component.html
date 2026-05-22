@@ -1,0 +1,90 @@
+<div class="table-container">
+  <div class="header">
+    <div>
+      <h2>Espacios</h2>
+      <p>Gestiona la ocupacion y asignacion real de estacionamientos.</p>
+    </div>
+    <button class="btn" type="button" (click)="abrirModal()">+ Nuevo Espacio</button>
+  </div>
+
+  <p class="state-message" *ngIf="loading">Cargando espacios...</p>
+  <p class="state-message error" *ngIf="error">{{ error }}</p>
+  <p class="state-message success" *ngIf="success">{{ success }}</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Numero</th>
+        <th>Estado</th>
+        <th>Vehiculo asignado</th>
+        <th>Usuario</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let espacio of espacios">
+        <td>{{ espacio.numero }}</td>
+        <td>
+          <span class="status" [class.free]="espacio.estado === 'LIBRE'" [class.reserved]="espacio.estado === 'RESERVADO'">
+            {{ espacio.estado }}
+          </span>
+        </td>
+        <td>{{ espacio.vehiculo?.placa || '-' }}</td>
+        <td>{{ espacio.vehiculo?.usuarioNombre || espacio.vehiculo?.usuarioEmail || '-' }}</td>
+        <td class="row-actions">
+          <button class="edit" type="button" (click)="abrirModalEditar(espacio)" [disabled]="accionesDeshabilitadas(espacio)">
+            Editar
+          </button>
+          <button class="delete" type="button" (click)="eliminar(espacio)" [disabled]="accionesDeshabilitadas(espacio)">
+            {{ textoEliminar(espacio) }}
+          </button>
+        </td>
+      </tr>
+      <tr *ngIf="!loading && espacios.length === 0">
+        <td colspan="5">No hay espacios registrados</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="modal" *ngIf="mostrarModal">
+  <form class="modal-content" [formGroup]="espacioForm" (ngSubmit)="guardar()">
+    <h3>{{ modalTitle }}</h3>
+
+    <label>
+      <span>Numero</span>
+      <input formControlName="numero" placeholder="A-01">
+    </label>
+    <small class="field-error" *ngIf="hasError('numero', 'required')">El numero es obligatorio</small>
+    <small class="field-error" *ngIf="hasError('numero', 'pattern')">Usa letras, numeros o guion</small>
+
+    <label>
+      <span>Estado</span>
+      <select formControlName="estado">
+        <option value="LIBRE">LIBRE</option>
+        <option value="OCUPADO">OCUPADO</option>
+        <option value="RESERVADO">RESERVADO</option>
+      </select>
+    </label>
+
+    <label>
+      <span>Vehiculo</span>
+      <select formControlName="vehiculoId" [disabled]="espacioForm.controls.estado.value === 'LIBRE'">
+        <option [ngValue]="null">Sin vehiculo</option>
+        <option *ngFor="let vehiculo of vehiculos" [ngValue]="vehiculo.id">
+          {{ vehiculo.placa }} - {{ vehiculo.usuarioNombre || vehiculo.usuarioEmail || 'Usuario' }}
+        </option>
+      </select>
+    </label>
+
+    <p class="state-message error" *ngIf="error">{{ error }}</p>
+
+    <div class="actions">
+      <button class="btn" type="submit" [disabled]="saving">
+        {{ submitText }}
+      </button>
+      <button class="cancel" type="button" (click)="cerrarModal()" [disabled]="saving">Cancelar</button>
+    </div>
+  </form>
+</div>

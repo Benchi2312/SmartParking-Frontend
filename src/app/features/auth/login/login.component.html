@@ -1,0 +1,48 @@
+<div class="auth-shell">
+  <div class="auth-glow auth-glow-left"></div>
+  <div class="auth-glow auth-glow-right"></div>
+
+  <div class="auth-card">
+    <div class="brand-mark">SP</div>
+    <p class="eyebrow">Smart Parking</p>
+    <h1>Inicia sesion</h1>
+    <p class="subtitle">
+      Accede a tu plataforma con una experiencia clara, moderna y conectada a tu backend.
+    </p>
+
+    <form [formGroup]="loginForm" (ngSubmit)="login()" novalidate>
+      <label class="field">
+        <span>Correo electronico</span>
+        <input
+          type="email"
+          placeholder="correo@ejemplo.com"
+          formControlName="email"
+        />
+        <small class="field-error" *ngIf="hasError('email', 'required')">El correo es obligatorio</small>
+        <small class="field-error" *ngIf="hasError('email', 'email')">Ingresa un correo valido</small>
+      </label>
+
+      <label class="field">
+        <span>Contrasena</span>
+        <input
+          type="password"
+          placeholder="Ingresa tu contrasena"
+          formControlName="password"
+        />
+        <small class="field-error" *ngIf="hasError('password', 'required')">La contrasena es obligatoria</small>
+      </label>
+
+      <button type="submit" [disabled]="loading">
+        <span class="button-shine"></span>
+        <span class="button-text">{{ loading ? 'Ingresando...' : 'Ingresar' }}</span>
+      </button>
+    </form>
+
+    <p class="error-message" *ngIf="error">{{ error }}</p>
+
+    <p class="auth-link">
+      No tienes cuenta?
+      <a routerLink="/register">Crear cuenta</a>
+    </p>
+  </div>
+</div>

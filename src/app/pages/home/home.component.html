@@ -1,0 +1,92 @@
+<main class="landing">
+  <section class="hero-section">
+    <nav class="top-nav">
+      <a class="brand" routerLink="/">Smart Parking</a>
+      <div class="nav-actions">
+        <a routerLink="/login">Iniciar Sesion</a>
+        <a routerLink="/register">Registrarse</a>
+      </div>
+    </nav>
+
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow">Plataforma inteligente</p>
+        <h1>Smart Parking</h1>
+        <p class="hero-text">Gestiona tus espacios de estacionamiento de manera inteligente</p>
+
+        <div class="hero-actions">
+          <a class="primary-button" routerLink="/login">Iniciar Sesion</a>
+          <a class="secondary-button" routerLink="/register">Registrarse</a>
+        </div>
+      </div>
+
+      <div class="hero-panel" aria-label="Resumen Smart Parking">
+        <div class="panel-header">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <div class="metric-row">
+          <div>
+            <p>Espacios</p>
+            <strong>24</strong>
+          </div>
+          <div>
+            <p>Reservas</p>
+            <strong>18</strong>
+          </div>
+        </div>
+        <div class="status-card">
+          <span class="pulse"></span>
+          <div>
+            <p>Estado del sistema</p>
+            <strong>Operativo</strong>
+          </div>
+        </div>
+        <div class="parking-grid">
+          <span class="free"></span>
+          <span class="busy"></span>
+          <span class="free"></span>
+          <span class="free"></span>
+          <span class="busy"></span>
+          <span class="free"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="content-section">
+    <article class="info-card wide-card">
+      <p class="section-label">Nosotros</p>
+      <h2>Control moderno para estacionamientos conectados</h2>
+      <p>
+        Smart Parking centraliza la gestion de vehiculos, reservas y disponibilidad
+        de espacios para que residentes y administradores trabajen con informacion clara.
+      </p>
+    </article>
+
+    <article class="info-card mission-card">
+      <p class="section-label">Mision</p>
+      <h2>Hacer simple la movilidad diaria</h2>
+      <p>
+        Nuestra mision es optimizar el uso de estacionamientos con herramientas
+        digitales rapidas, confiables y faciles de adoptar.
+      </p>
+    </article>
+  </section>
+
+  <section class="services-section">
+    <div class="section-heading">
+      <p class="section-label">Servicios</p>
+      <h2>Todo lo esencial para operar mejor</h2>
+    </div>
+
+    <div class="service-grid">
+      <article class="service-card" *ngFor="let service of services">
+        <div class="service-icon">{{ service.title.charAt(0) }}</div>
+        <h3>{{ service.title }}</h3>
+        <p>{{ service.text }}</p>
+      </article>
+    </div>
+  </section>
+</main>

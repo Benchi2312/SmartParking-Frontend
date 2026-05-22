@@ -1,0 +1,81 @@
+<div class="table-container">
+  <div class="header">
+    <div>
+      <h2>Vehiculos</h2>
+      <p *ngIf="isAdmin">Vista administrativa de todos los vehiculos registrados.</p>
+    </div>
+    <button class="btn" type="button" (click)="abrirModal()" *ngIf="!isAdmin">+ Nuevo Vehiculo</button>
+  </div>
+
+  <p class="state-message" *ngIf="loading">Cargando vehiculos...</p>
+  <p class="state-message error" *ngIf="error">{{ error }}</p>
+  <p class="state-message success" *ngIf="success">{{ success }}</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Placa</th>
+        <th>Marca</th>
+        <th>Modelo</th>
+        <th *ngIf="isAdmin">Usuario</th>
+        <th *ngIf="!isAdmin">Acciones</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let v of vehiculos">
+        <td>{{ v.placa }}</td>
+        <td>{{ v.marca }}</td>
+        <td>{{ v.modelo }}</td>
+        <td *ngIf="isAdmin">{{ v.usuarioNombre || v.usuarioEmail || 'Sin usuario' }}</td>
+        <td class="row-actions" *ngIf="!isAdmin">
+          <button class="edit" type="button" (click)="abrirModalEditar(v)" [disabled]="accionesDeshabilitadas(v)">
+            Editar
+          </button>
+          <button class="delete" type="button" (click)="eliminar(v)" [disabled]="accionesDeshabilitadas(v)">
+            {{ textoEliminar(v) }}
+          </button>
+        </td>
+      </tr>
+      <tr *ngIf="!loading && vehiculos.length === 0">
+        <td [attr.colspan]="isAdmin ? 4 : 4">No hay vehiculos registrados</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="modal" *ngIf="mostrarModal">
+  <form class="modal-content" [formGroup]="vehiculoForm" (ngSubmit)="guardar()">
+    <h3>{{ modalTitle }}</h3>
+
+    <label>
+      <span>Placa</span>
+      <input formControlName="placa" placeholder="ABC-123">
+    </label>
+    <small class="field-error" *ngIf="hasError('placa', 'required')">La placa es obligatoria</small>
+    <small class="field-error" *ngIf="hasError('placa', 'pattern')">Usa 5 a 10 caracteres: letras, numeros o guion</small>
+
+    <label>
+      <span>Marca</span>
+      <input formControlName="marca" placeholder="Marca">
+    </label>
+    <small class="field-error" *ngIf="hasError('marca', 'required')">La marca es obligatoria</small>
+    <small class="field-error" *ngIf="hasError('marca', 'minlength')">La marca debe tener al menos 2 caracteres</small>
+
+    <label>
+      <span>Modelo</span>
+      <input formControlName="modelo" placeholder="Modelo">
+    </label>
+    <small class="field-error" *ngIf="hasError('modelo', 'required')">El modelo es obligatorio</small>
+    <small class="field-error" *ngIf="hasError('modelo', 'minlength')">El modelo debe tener al menos 2 caracteres</small>
+
+    <p class="state-message error" *ngIf="error">{{ error }}</p>
+
+    <div class="actions">
+      <button class="btn" type="submit" [disabled]="saving">
+        {{ submitText }}
+      </button>
+      <button class="cancel" type="button" (click)="cerrarModal()" [disabled]="saving">Cancelar</button>
+    </div>
+  </form>
+</div>
