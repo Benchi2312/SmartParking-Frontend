@@ -1,0 +1,61 @@
+<div class="auth-shell">
+  <div class="auth-glow auth-glow-left"></div>
+  <div class="auth-glow auth-glow-right"></div>
+
+  <div class="auth-card">
+    <div class="brand-mark">SP</div>
+    <p class="eyebrow">Smart Parking</p>
+    <h1>Crea tu cuenta</h1>
+    <p class="subtitle">
+      Registra tu acceso para ingresar al sistema con una interfaz limpia y profesional.
+    </p>
+
+    <form [formGroup]="registerForm" (ngSubmit)="register()" novalidate>
+      <label class="field">
+        <span>Nombre completo</span>
+        <input
+          type="text"
+          placeholder="Ingresa tu nombre"
+          formControlName="nombre"
+        />
+        <small class="field-error" *ngIf="hasError('nombre', 'required')">El nombre es obligatorio</small>
+        <small class="field-error" *ngIf="hasError('nombre', 'minlength')">El nombre debe tener al menos 3 caracteres</small>
+      </label>
+
+      <label class="field">
+        <span>Correo electronico</span>
+        <input
+          type="email"
+          placeholder="correo@ejemplo.com"
+          formControlName="email"
+        />
+        <small class="field-error" *ngIf="hasError('email', 'required')">El correo es obligatorio</small>
+        <small class="field-error" *ngIf="hasError('email', 'email')">Ingresa un correo valido</small>
+      </label>
+
+      <label class="field">
+        <span>Contrasena</span>
+        <input
+          type="password"
+          placeholder="Crea una contrasena segura"
+          formControlName="password"
+        />
+        <small class="field-error" *ngIf="hasError('password', 'required')">La contrasena es obligatoria</small>
+        <small class="field-error" *ngIf="hasError('password', 'minlength')">Usa al menos 6 caracteres</small>
+      </label>
+
+      <button type="submit" [disabled]="loading">
+        <span class="button-shine"></span>
+        <span class="button-text">{{ loading ? 'Creando cuenta...' : 'Crear cuenta' }}</span>
+      </button>
+    </form>
+
+    <p class="error-message" *ngIf="error">{{ error }}</p>
+    <p class="success-message" *ngIf="success">{{ success }}</p>
+
+    <p class="auth-link">
+      Ya tienes cuenta?
+      <a routerLink="/login">Iniciar sesion</a>
+    </p>
+  </div>
+</div>

@@ -1,0 +1,217 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.auth-shell {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at top left, rgba(37, 99, 235, 0.28), transparent 30%),
+    radial-gradient(circle at bottom right, rgba(34, 197, 94, 0.2), transparent 28%),
+    linear-gradient(160deg, #081121 0%, #0f172a 52%, #111827 100%);
+}
+
+.auth-glow {
+  position: absolute;
+  width: 320px;
+  height: 320px;
+  border-radius: 999px;
+  filter: blur(50px);
+  opacity: 0.45;
+}
+
+.auth-glow-left {
+  top: 8%;
+  left: -60px;
+  background: rgba(37, 99, 235, 0.45);
+}
+
+.auth-glow-right {
+  right: -80px;
+  bottom: 8%;
+  background: rgba(34, 197, 94, 0.32);
+}
+
+.auth-card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 460px;
+  padding: 40px 34px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(22px);
+  box-shadow: 0 25px 60px rgba(8, 15, 35, 0.38);
+  color: #f8fafc;
+}
+
+.brand-mark {
+  width: 54px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #2563eb, #22c55e);
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  box-shadow: 0 16px 28px rgba(37, 99, 235, 0.28);
+}
+
+.eyebrow {
+  margin: 18px 0 10px;
+  color: #93c5fd;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0;
+  font-size: 34px;
+  line-height: 1.1;
+}
+
+.subtitle {
+  margin: 14px 0 28px;
+  color: rgba(226, 232, 240, 0.85);
+  line-height: 1.6;
+  font-size: 15px;
+}
+
+form {
+  display: grid;
+  gap: 18px;
+}
+
+.field {
+  display: grid;
+  gap: 10px;
+}
+
+.field span {
+  color: #e2e8f0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.field input {
+  width: 100%;
+  padding: 16px 18px;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 18px;
+  background: rgba(15, 23, 42, 0.38);
+  color: #f8fafc;
+  font-size: 15px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.field input::placeholder {
+  color: rgba(203, 213, 225, 0.62);
+}
+
+.field input:focus {
+  outline: none;
+  border-color: rgba(96, 165, 250, 0.9);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.18);
+  transform: translateY(-1px);
+}
+
+.field-error {
+  color: #fecaca;
+  font-size: 12px;
+}
+
+button {
+  position: relative;
+  overflow: hidden;
+  margin-top: 8px;
+  padding: 16px 20px;
+  border: none;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #2563eb, #22c55e);
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  box-shadow: 0 16px 30px rgba(37, 99, 235, 0.24);
+}
+
+button:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 20px 36px rgba(37, 99, 235, 0.28);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
+.button-shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 20%, rgba(255, 255, 255, 0.28) 50%, transparent 80%);
+  transform: translateX(-120%);
+  transition: transform 0.45s ease;
+}
+
+button:hover .button-shine {
+  transform: translateX(120%);
+}
+
+.button-text {
+  position: relative;
+  z-index: 1;
+}
+
+.error-message {
+  margin: 16px 0 0;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(239, 68, 68, 0.14);
+  border: 1px solid rgba(248, 113, 113, 0.26);
+  color: #fecaca;
+  font-size: 14px;
+}
+
+.auth-link {
+  margin: 22px 0 0;
+  color: rgba(226, 232, 240, 0.86);
+  text-align: center;
+  font-size: 14px;
+}
+
+.auth-link a {
+  color: #86efac;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.auth-link a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+  .auth-card {
+    padding: 32px 22px;
+    border-radius: 24px;
+  }
+
+  h1 {
+    font-size: 28px;
+  }
+}
