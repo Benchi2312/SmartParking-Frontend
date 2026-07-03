@@ -59,8 +59,8 @@
   <main class="main-content">
     <header class="topbar">
       <div>
-        <p class="eyebrow">Vista de usuario final</p>
-        <h1>{{ sectionTitle }}</h1>
+        <h1 *ngIf="activeSection === 'dashboard'">¡Hola de nuevo, {{ userName }}!</h1>
+        <h1 *ngIf="activeSection !== 'dashboard'">{{ sectionTitle }}</h1>
         <p class="subtitle">{{ sectionSubtitle }}</p>
       </div>
 
@@ -122,7 +122,7 @@
           ></div>
           <p>Reservas</p>
           <h3>{{ reservas.length }}</h3>
-          <span>Historial real del backend</span>
+          <span>Reservas registradas</span>
         </article>
       </div>
 
@@ -139,11 +139,11 @@
           <div class="detail-list">
             <div>
               <span>Marca</span>
-              <strong>{{ vehicle?.marca || '-' }}</strong>
+              <strong>{{ (vehicle?.marca || '-') | titlecase }}</strong>
             </div>
             <div>
               <span>Modelo</span>
-              <strong>{{ vehicle?.modelo || '-' }}</strong>
+              <strong>{{ (vehicle?.modelo || '-') | titlecase }}</strong>
             </div>
           </div>
         </article>
@@ -164,60 +164,77 @@
           </div>
 
           <p class="panel-text">
-            La informacion de espacios se obtiene directamente del backend.
+            Manten tu vehiculo en tu espacio asignado para evitar contratiempos con la administracion del condominio.
           </p>
         </article>
       </div>
     </section>
 
     <section class="content-area" *ngIf="activeSection === 'vehiculo'">
-      <app-list-vehiculos></app-list-vehiculos>
+      <app-list-vehiculos (vehiculosChanged)="cargarDatos()"></app-list-vehiculos>
     </section>
 
     <section class="content-area" *ngIf="activeSection === 'espacio'">
-      <article class="panel-card full-width">
+
+      <div class="alert-banner alert-error" *ngIf="ultimaReserva?.estado === 'CANCELADA'">
+        <span class="alert-icon">!</span>
+        <div class="alert-body">
+          <h4 class="alert-title">Solicitud Rechazada</h4>
+          <p class="alert-desc">Tu ultima solicitud de estacionamiento fue rechazada por la administracion. Por favor, selecciona otro espacio disponible o ponte en contacto con soporte.</p>
+        </div>
+      </div>
+
+      <div class="alert-banner alert-warning" *ngIf="ultimaReserva?.estado === 'PENDIENTE'">
+        <span class="alert-icon">?</span>
+        <div class="alert-body">
+          <h4 class="alert-title">Solicitud en Espera</h4>
+          <p class="alert-desc">Tu solicitud para el espacio esta en cola de revision. El administrador validara el acceso pronto.</p>
+        </div>
+      </div>
+
+      <div class="alert-banner alert-success" *ngIf="ultimaReserva?.estado === 'FINALIZADA'">
+        <span class="alert-icon">&#10003;</span>
+        <div class="alert-body">
+          <h4 class="alert-title">Vehiculo Liberado</h4>
+          <p class="alert-desc">Tu vehiculo ha salido del recinto exitosamente. El espacio quedo libre y ya puedes generar una nueva solicitud.</p>
+        </div>
+      </div>
+
+      <article class="panel-card full-width" *ngFor="let espacio of espaciosAsignados">
         <div class="panel-header">
           <div>
             <p class="panel-label">Mi Espacio</p>
             <h3>Asignacion actual</h3>
           </div>
-          <span
-            class="status-pill"
-            [class.available]="parkingStatusTone === 'available'"
-            [class.occupied]="parkingStatusTone === 'occupied'"
-          >
-            {{ parkingSpace?.estado || 'Sin datos' }}
-          </span>
+          <span class="status-pill occupied">OCUPADO</span>
         </div>
 
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>Numero</th>
-                <th>Estado</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let espacio of espacios">
-                <td>{{ espacio.numero }}</td>
-                <td>{{ espacio.estado }}</td>
-              </tr>
-              <tr *ngIf="espacios.length === 0">
-                <td colspan="2">No hay espacios registrados</td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="detail-list">
+          <div>
+            <span>Numero de espacio</span>
+            <strong>{{ espacio.numero }}</strong>
+          </div>
+          <div>
+            <span>Estado</span>
+            <strong>Ocupado</strong>
+          </div>
+          <div class="detail-full" *ngIf="espacio.vehiculo">
+            <span>Vehiculo Estacionado</span>
+            <strong>{{ espacio.vehiculo.marca }} {{ espacio.vehiculo.modelo }} - Placa: [{{ espacio.vehiculo.placa }}]</strong>
+          </div>
         </div>
+
+        <p class="panel-text">
+          Tu vehiculo se encuentra estacionado en el espacio <strong>{{ espacio.numero }}</strong>.
+          Respeta los limites del espacio asignado para evitar contratiempos con la administracion.
+        </p>
       </article>
-    </section>
 
-    <section class="content-area" *ngIf="activeSection === 'historial'">
-      <article class="panel-card full-width">
+      <article class="panel-card full-width solicitar-card" *ngIf="tieneVehiculosSinEspacio">
         <div class="panel-header">
           <div>
             <p class="panel-label">Nueva reserva</p>
-            <h3>Crear reserva</h3>
+            <h3>Solicitar Espacio de Estacionamiento</h3>
           </div>
         </div>
 
@@ -233,33 +250,41 @@
             <span>Vehiculo</span>
             <select formControlName="vehiculoId">
               <option [ngValue]="null">Selecciona un vehiculo</option>
-              <option *ngFor="let vehiculo of vehiculos" [ngValue]="vehiculo.id">
-                {{ vehiculo.placa }} - {{ vehiculo.marca }} {{ vehiculo.modelo }}
+              <option *ngFor="let vehiculo of vehiculosSinEspacio" [ngValue]="vehiculo.id">
+                {{ vehiculo.placa }} - {{ vehiculo.marca | titlecase }} {{ vehiculo.modelo | titlecase }}
               </option>
             </select>
             <small class="field-error" *ngIf="hasReservaError('vehiculoId', 'required')">El vehiculo es obligatorio</small>
           </label>
 
           <label>
-            <span>Estado</span>
-            <select formControlName="estado">
-              <option value="PENDIENTE">PENDIENTE</option>
-              <option value="CONFIRMADA">CONFIRMADA</option>
-              <option value="CANCELADA">CANCELADA</option>
+            <span>Espacio disponible</span>
+            <select formControlName="espacioId">
+              <option [ngValue]="null">Selecciona un espacio</option>
+              <option *ngFor="let espacio of espaciosDisponibles" [ngValue]="espacio.id">
+                {{ espacio.numero }}
+              </option>
             </select>
-            <small class="field-error" *ngIf="hasReservaError('estado', 'required')">El estado es obligatorio</small>
+            <small class="field-error" *ngIf="hasReservaError('espacioId', 'required')">Selecciona un espacio disponible</small>
           </label>
 
-          <button type="submit" class="reservation-submit" [disabled]="reservaSaving || vehiculos.length === 0">
-            {{ reservaSaving ? 'Creando...' : 'Crear reserva' }}
+          <div class="reservation-status">
+            <span>Estado inicial</span>
+            <strong>PENDIENTE</strong>
+          </div>
+
+          <button type="submit" class="reservation-submit" [disabled]="reservaSaving">
+            {{ reservaSaving ? 'Enviando...' : '🚀 Enviar Solicitud de Reserva' }}
           </button>
         </form>
 
         <p class="form-message success" *ngIf="reservaSuccess">{{ reservaSuccess }}</p>
         <p class="form-message error" *ngIf="reservaError">{{ reservaError }}</p>
-        <p class="form-message" *ngIf="vehiculos.length === 0">Registra un vehiculo antes de crear una reserva.</p>
       </article>
 
+    </section>
+
+    <section class="content-area" *ngIf="activeSection === 'historial'">
       <article class="panel-card full-width">
         <div class="panel-header">
           <div>
@@ -273,18 +298,20 @@
             <thead>
               <tr>
                 <th>Fecha</th>
-                <th>Estado</th>
                 <th>Vehiculo</th>
+                <th>Espacio Asignado</th>
+                <th>Estado</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let reserva of reservas">
                 <td>{{ reserva.fecha }}</td>
-                <td>{{ reserva.estado }}</td>
                 <td>{{ reserva.vehiculo?.placa || '-' }}</td>
+                <td>{{ reserva.espacio?.numero || '-' }}</td>
+                <td><span [class]="getEstadoClass(reserva.estado)">{{ getEstadoLabel(reserva.estado) }}</span></td>
               </tr>
               <tr *ngIf="reservas.length === 0">
-                <td colspan="3">No hay reservas registradas</td>
+                <td colspan="4">No hay reservas registradas</td>
               </tr>
             </tbody>
           </table>

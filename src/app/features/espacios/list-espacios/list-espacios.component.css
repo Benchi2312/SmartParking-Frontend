@@ -91,11 +91,6 @@ td {
   color: #15803d;
 }
 
-.status.reserved {
-  background: #fef3c7;
-  color: #92400e;
-}
-
 .row-actions {
   display: flex;
   gap: 8px;
@@ -124,13 +119,30 @@ td {
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 50;
+  padding: 16px;
 }
 
 .modal-content {
   background: white;
   padding: 25px;
   border-radius: 12px;
-  width: 360px;
+  width: min(380px, 100%);
+}
+
+.confirm-card {
+  border-top: 5px solid #0f172a;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.35);
+}
+
+.confirm-card h3 {
+  color: #0f172a;
+  margin-top: 0;
+}
+
+.confirm-card p {
+  color: #475569;
+  line-height: 1.5;
 }
 
 .modal-content label {
@@ -163,4 +175,30 @@ td {
   display: flex;
   justify-content: space-between;
   margin-top: 16px;
+  gap: 10px;
+}
+
+@media (max-width: 720px) {
+  .table-container {
+    padding: 16px;
+    overflow-x: auto;
+  }
+
+  .header,
+  .actions,
+  .row-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  table {
+    min-width: 760px;
+  }
+
+  .btn,
+  .cancel,
+  .edit,
+  .delete {
+    width: 100%;
+  }
 }

@@ -1,5 +1,6 @@
 import { Vehiculo } from './vehiculo.model';
 import { Usuario } from './usuario.model';
+import { Espacio } from './espacio.model';
 
 export interface Reserva {
   id: number;
@@ -7,11 +8,12 @@ export interface Reserva {
   estado: string;
   usuario?: Usuario;
   vehiculo?: Vehiculo;
+  espacio?: Espacio;
 }
 
 export interface CrearReservaRequest {
   fecha: string;
-  estado: string;
-  usuarioId: number;
+  estado?: string;
   vehiculoId: number;
+  espacioId: number;
 }

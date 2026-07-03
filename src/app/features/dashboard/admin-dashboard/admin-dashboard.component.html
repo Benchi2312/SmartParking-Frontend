@@ -1,0 +1,66 @@
+<p class="state-message" *ngIf="loading">Cargando informacion...</p>
+<p class="state-message error" *ngIf="error">{{ error }}</p>
+<p class="state-message error" *ngIf="reservaError">{{ reservaError }}</p>
+
+<section class="cards">
+  <div class="card">
+    <p>Total Vehiculos</p>
+    <h2>{{ vehiculosTotal }}</h2>
+  </div>
+  <div class="card">
+    <p>Espacios Ocupados</p>
+    <h2>{{ espaciosOcupados }}</h2>
+  </div>
+  <div class="card">
+    <p>Usuarios</p>
+    <h2>{{ usuariosTotal }}</h2>
+  </div>
+  <div class="card">
+    <p>Reservas Pendientes</p>
+    <h2>{{ reservasPendientes }}</h2>
+  </div>
+</section>
+
+<section class="data-panel full-width" style="margin-top: 25px;">
+  <div class="panel-header">
+    <div>
+      <p>Solicitudes pendientes</p>
+      <h3>Reservas</h3>
+    </div>
+  </div>
+
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Estado</th>
+          <th>Vehiculo</th>
+          <th>Usuario</th>
+          <th>Accion</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let reserva of pendientes">
+          <td>{{ reserva.fecha }}</td>
+          <td><span [class]="getEstadoClass(reserva.estado)">{{ getEstadoLabel(reserva.estado) }}</span></td>
+          <td>{{ reserva.vehiculo?.placa || '-' }}</td>
+          <td>{{ reserva.usuario?.nombre || reserva.usuario?.email || '-' }}</td>
+          <td>
+            <div class="reserva-actions">
+              <button class="btn-aprobar" (click)="aprobarReserva(reserva)" [disabled]="procesandoId === reserva.id">
+                {{ procesandoId === reserva.id ? 'Procesando...' : 'Aprobar' }}
+              </button>
+              <button class="btn-cancelar" (click)="rechazarReserva(reserva)" [disabled]="procesandoId === reserva.id">
+                {{ procesandoId === reserva.id ? 'Procesando...' : 'Rechazar' }}
+              </button>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="!loading && pendientes.length === 0">
+          <td colspan="5">No hay solicitudes de reserva pendientes</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>

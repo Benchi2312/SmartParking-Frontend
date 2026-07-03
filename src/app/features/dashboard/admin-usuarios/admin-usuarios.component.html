@@ -1,0 +1,26 @@
+<p class="state-message" *ngIf="loading">Cargando usuarios...</p>
+<p class="state-message error" *ngIf="error">{{ error }}</p>
+
+<div class="table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Email</th>
+        <th>Rol</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let u of usuarios">
+        <td>{{ u.nombre }}</td>
+        <td>{{ u.email }}</td>
+        <td>
+          <span [class]="rolBadgeClass(u.rol)">{{ rolLabel(u.rol) }}</span>
+        </td>
+      </tr>
+      <tr *ngIf="!loading && usuarios.length === 0">
+        <td colspan="3">No hay usuarios registrados</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

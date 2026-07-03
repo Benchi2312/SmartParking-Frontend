@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { CrearVehiculoRequest, Vehiculo } from '../../../models/vehiculo.model';
@@ -21,8 +21,11 @@ type VehiculoForm = FormGroup<{
   styleUrls: ['./list-vehiculos.component.css']
 })
 export class ListVehiculosComponent implements OnInit {
+  @Output() vehiculosChanged = new EventEmitter<void>();
+
   vehiculos: Vehiculo[] = [];
   mostrarModal: boolean = false;
+  vehiculoPendienteEliminar: Vehiculo | null = null;
   vehiculoEditando: Vehiculo | null = null;
   loading: boolean = false;
   saving: boolean = false;
@@ -36,7 +39,7 @@ export class ListVehiculosComponent implements OnInit {
       nonNullable: true,
       validators: [
         Validators.required,
-        Validators.pattern(/^[A-Za-z0-9-]{5,10}$/)
+        Validators.pattern(/^[A-Za-z]{3}-\d{3}$|^[A-Za-z]{2}-\d{4}$/)
       ]
     }),
     marca: new FormControl('', {
@@ -80,6 +83,7 @@ export class ListVehiculosComponent implements OnInit {
     this.mostrarModal = true;
     this.error = '';
     this.success = '';
+    this.vehiculoForm.reset();
   }
 
   abrirModalEditar(vehiculo: Vehiculo) {
@@ -143,7 +147,7 @@ export class ListVehiculosComponent implements OnInit {
           ? 'Vehiculo actualizado correctamente'
           : 'Vehiculo registrado correctamente';
         this.cerrarModal();
-        this.cargarVehiculos();
+        this.cargarVehiculos(true);
       },
       error: (err) => {
         this.saving = false;
@@ -157,9 +161,21 @@ export class ListVehiculosComponent implements OnInit {
       return;
     }
 
-    const confirmar = confirm(`Eliminar el vehiculo con placa ${vehiculo.placa}?`);
+    this.vehiculoPendienteEliminar = vehiculo;
+  }
 
-    if (!confirmar) {
+  cancelarEliminacion() {
+    if (this.deletingId) {
+      return;
+    }
+
+    this.vehiculoPendienteEliminar = null;
+  }
+
+  confirmarEliminacion() {
+    const vehiculo = this.vehiculoPendienteEliminar;
+
+    if (!vehiculo?.id || this.deletingId) {
       return;
     }
 
@@ -170,11 +186,13 @@ export class ListVehiculosComponent implements OnInit {
     this.vehiculoService.eliminarVehiculo(vehiculo.id).subscribe({
       next: () => {
         this.deletingId = null;
+        this.vehiculoPendienteEliminar = null;
         this.success = 'Vehiculo eliminado correctamente';
-        this.cargarVehiculos();
+        this.cargarVehiculos(true);
       },
       error: (err) => {
         this.deletingId = null;
+        this.vehiculoPendienteEliminar = null;
         this.error = this.errorMessageService.fromBackend(err, 'No se pudo eliminar el vehiculo');
       }
     });
@@ -192,7 +210,7 @@ export class ListVehiculosComponent implements OnInit {
     return this.estaEliminando(vehiculo) ? 'Eliminando...' : 'Eliminar';
   }
 
-  cargarVehiculos() {
+  cargarVehiculos(notificarCambio: boolean = false) {
     const usuarioId = this.getUsuarioId();
 
     if (!this.isAdmin && !usuarioId) {
@@ -208,6 +226,9 @@ export class ListVehiculosComponent implements OnInit {
       next: (vehiculos) => {
         this.vehiculos = vehiculos;
         this.loading = false;
+        if (notificarCambio) {
+          this.vehiculosChanged.emit();
+        }
       },
       error: (err) => {
         this.vehiculos = [];

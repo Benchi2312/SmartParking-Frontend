@@ -88,7 +88,7 @@ export class LoginComponent {
     const normalizedRole = this.normalizeRole(rol);
 
     if (normalizedRole === 'ADMIN') {
-      this.router.navigate(['/dashboard']);
+      this.router.navigate(['/admin/dashboard']);
       return;
     }
 

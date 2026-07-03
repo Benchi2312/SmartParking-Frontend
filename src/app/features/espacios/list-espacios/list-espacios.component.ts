@@ -26,6 +26,7 @@ export class ListEspaciosComponent implements OnInit {
   espacios: Espacio[] = [];
   vehiculos: Vehiculo[] = [];
   mostrarModal: boolean = false;
+  espacioPendienteEliminar: Espacio | null = null;
   espacioEditando: Espacio | null = null;
   loading: boolean = false;
   saving: boolean = false;
@@ -117,8 +118,8 @@ export class ListEspaciosComponent implements OnInit {
 
     const formValue = this.espacioForm.getRawValue();
 
-    if (formValue.estado !== 'LIBRE' && !formValue.vehiculoId) {
-      this.error = 'Selecciona un vehiculo para ocupar o reservar el espacio';
+    if (formValue.estado === 'OCUPADO' && !formValue.vehiculoId) {
+      this.error = 'Selecciona un vehiculo para ocupar el espacio';
       return;
     }
 
@@ -155,7 +156,21 @@ export class ListEspaciosComponent implements OnInit {
       return;
     }
 
-    if (!confirm(`Eliminar el espacio ${espacio.numero}?`)) {
+    this.espacioPendienteEliminar = espacio;
+  }
+
+  cancelarEliminacion() {
+    if (this.deletingId) {
+      return;
+    }
+
+    this.espacioPendienteEliminar = null;
+  }
+
+  confirmarEliminacion() {
+    const espacio = this.espacioPendienteEliminar;
+
+    if (!espacio?.id || this.deletingId) {
       return;
     }
 
@@ -166,11 +181,13 @@ export class ListEspaciosComponent implements OnInit {
     this.espacioService.eliminarEspacio(espacio.id).subscribe({
       next: () => {
         this.deletingId = null;
+        this.espacioPendienteEliminar = null;
         this.success = 'Espacio eliminado correctamente';
         this.cargarDatos();
       },
       error: (err) => {
         this.deletingId = null;
+        this.espacioPendienteEliminar = null;
         this.error = this.errorMessageService.fromBackend(err, 'No se pudo eliminar el espacio');
       }
     });

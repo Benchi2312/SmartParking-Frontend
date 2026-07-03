@@ -25,8 +25,8 @@
     <tbody>
       <tr *ngFor="let v of vehiculos">
         <td>{{ v.placa }}</td>
-        <td>{{ v.marca }}</td>
-        <td>{{ v.modelo }}</td>
+        <td>{{ v.marca | titlecase }}</td>
+        <td>{{ v.modelo | titlecase }}</td>
         <td *ngIf="isAdmin">{{ v.usuarioNombre || v.usuarioEmail || 'Sin usuario' }}</td>
         <td class="row-actions" *ngIf="!isAdmin">
           <button class="edit" type="button" (click)="abrirModalEditar(v)" [disabled]="accionesDeshabilitadas(v)">
@@ -53,7 +53,7 @@
       <input formControlName="placa" placeholder="ABC-123">
     </label>
     <small class="field-error" *ngIf="hasError('placa', 'required')">La placa es obligatoria</small>
-    <small class="field-error" *ngIf="hasError('placa', 'pattern')">Usa 5 a 10 caracteres: letras, numeros o guion</small>
+    <small class="field-error" *ngIf="hasError('placa', 'pattern')">Formato invalido. Usa ABC-123 para autos o AB-1234 para motos</small>
 
     <label>
       <span>Marca</span>
@@ -78,4 +78,20 @@
       <button class="cancel" type="button" (click)="cerrarModal()" [disabled]="saving">Cancelar</button>
     </div>
   </form>
+</div>
+
+<div class="modal" *ngIf="vehiculoPendienteEliminar">
+  <div class="modal-content confirm-card">
+    <h3>Eliminar vehiculo</h3>
+    <p>
+      Esta accion eliminara el vehiculo con placa
+      <strong>{{ vehiculoPendienteEliminar.placa }}</strong>.
+    </p>
+    <div class="actions">
+      <button class="delete" type="button" (click)="confirmarEliminacion()" [disabled]="!!deletingId">
+        {{ deletingId ? 'Eliminando...' : 'Eliminar' }}
+      </button>
+      <button class="cancel" type="button" (click)="cancelarEliminacion()" [disabled]="!!deletingId">Cancelar</button>
+    </div>
+  </div>
 </div>

@@ -1,0 +1,48 @@
+<p class="state-message" *ngIf="loading">Cargando vehiculos...</p>
+<p class="state-message error" *ngIf="error">{{ error }}</p>
+<p class="form-message success" *ngIf="success">{{ success }}</p>
+
+<div class="search-bar">
+  <input
+    type="text"
+    [(ngModel)]="searchTerm"
+    placeholder="🔍 Buscar por placa, marca o usuario..."
+    class="search-input"
+  />
+</div>
+
+<div class="table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th>Placa</th>
+        <th>Marca</th>
+        <th>Modelo</th>
+        <th>Usuario</th>
+        <th>Email</th>
+        <th>Accion</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let vehiculo of filteredVehiculos">
+        <td><strong>{{ vehiculo.placa }}</strong></td>
+        <td>{{ vehiculo.marca | titlecase }}</td>
+        <td>{{ vehiculo.modelo | titlecase }}</td>
+        <td>{{ vehiculo.usuarioNombre || '-' }}</td>
+        <td>{{ vehiculo.usuarioEmail || '-' }}</td>
+        <td>
+          <button class="btn-delete" *ngIf="vehiculo.id" (click)="eliminarVehiculo(vehiculo.id)" title="Eliminar vehiculo" [disabled]="deletingId === vehiculo.id">
+            {{ deletingId === vehiculo.id ? 'Eliminando...' : '🗑️ Eliminar' }}
+          </button>
+        </td>
+      </tr>
+      <tr *ngIf="!loading && filteredVehiculos.length === 0">
+        <td colspan="6">
+          {{ vehiculos.length === 0 ? 'No hay vehiculos registrados' : 'Ningun vehiculo coincide con la busqueda' }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+

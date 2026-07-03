@@ -1,0 +1,134 @@
+<div class="section-header">
+  <div class="section-header-left">
+    <h2 class="section-title">Gesti&oacute;n de Espacios</h2>
+    <p class="section-subtitle">Monitoreo y control de espacios de estacionamiento en tiempo real</p>
+  </div>
+  <button (click)="abrirModalCrear()" class="btn-nuevo-espacio">+ Nuevo Espacio</button>
+</div>
+
+<div class="grid-tarjetas">
+  @for (espacio of espacios; track espacio.id) {
+    <div class="espacio-card" [ngClass]="espacio.estado === 'OCUPADO' ? 'card-ocupado' : 'card-libre'">
+
+      <div class="card-top">
+        <span class="card-numero">{{ espacio.numero }}</span>
+        <span class="badge" [ngClass]="espacio.estado === 'OCUPADO' ? 'badge-ocupado' : 'badge-libre'">
+          {{ espacio.estado === 'OCUPADO' ? 'Ocupado' : 'Disponible' }}
+        </span>
+      </div>
+
+      @if (espacio.estado === 'OCUPADO') {
+        <div class="info-box">
+          <div class="info-group">
+            <span class="info-group-label">Veh&iacute;culo</span>
+            <div class="info-row">
+              <span class="info-row-value">
+                {{ (espacio.vehiculo?.marca || '') | titlecase }} {{ (espacio.vehiculo?.modelo || '') | titlecase }}
+              </span>
+              <span class="placa-badge">{{ espacio.vehiculo?.placa || '?' }}</span>
+            </div>
+          </div>
+
+          <div class="info-sep"></div>
+
+          <div class="info-group">
+            <span class="info-group-label">Propietario</span>
+            <span class="info-value">{{ espacio.usuario?.nombre || espacio.vehiculo?.usuarioNombre || 'Sin nombre' }}</span>
+          </div>
+        </div>
+
+        <div class="card-actions">
+          <button (click)="liberarEspacio(espacio)" class="btn-liberar" [disabled]="liberandoEspacioId === espacio.id">
+            @if (liberandoEspacioId === espacio.id) {
+              <span class="btn-liberar-loading">
+                <span class="spinner"></span>
+                Liberando...
+              </span>
+            } @else {
+              Liberar
+            }
+          </button>
+          <button (click)="confirmarEliminacion(espacio)" class="btn-icon-delete" title="Eliminar espacio">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 6h18"/>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+              <path d="M10 11v6"/>
+              <path d="M14 11v6"/>
+            </svg>
+          </button>
+        </div>
+      } @else {
+        <div class="libre-placeholder">Listo para asignaci&oacute;n</div>
+
+        <div class="card-actions-libre">
+          <button (click)="abrirModalEditar(espacio)" class="btn-action-edit">Editar</button>
+          <button (click)="confirmarEliminacion(espacio)" class="btn-action-delete">Eliminar</button>
+        </div>
+      }
+
+    </div>
+  }
+</div>
+
+@if (!loading && espacios.length === 0) {
+  <p class="empty-state">No hay espacios registrados</p>
+}
+
+<aside class="modal-overlay" *ngIf="mostrarModal" (click)="cerrarModal()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>{{ modalTitle }}</h3>
+      <button type="button" class="modal-close" (click)="cerrarModal()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <form [formGroup]="espacioForm" (ngSubmit)="guardar()">
+      @if (error) {
+      <p class="msg-error-modal">{{ error }}</p>
+      }
+
+      <label class="form-field">
+        <span>N&uacute;mero</span>
+        <input type="text" formControlName="numero" placeholder="Ej: A-01" maxlength="10">
+        @if (espacioForm.controls.numero.hasError('required') && espacioForm.controls.numero.touched) {
+          <small class="field-error">El n&uacute;mero es obligatorio</small>
+        }
+        @if (espacioForm.controls.numero.hasError('pattern') && espacioForm.controls.numero.touched) {
+          <small class="field-error">Formato inv&aacute;lido (m&aacute;x 10 caracteres alfanum&eacute;ricos y guiones)</small>
+        }
+      </label>
+
+      <label class="form-field">
+        <span>Estado</span>
+        <select formControlName="estado">
+          <option value="LIBRE">Libre</option>
+          <option value="OCUPADO">Ocupado</option>
+        </select>
+      </label>
+
+      @if (espacioForm.controls.estado.value === 'OCUPADO') {
+        <label class="form-field">
+          <span>Veh&iacute;culo</span>
+          <select formControlName="vehiculoId">
+            <option [ngValue]="null">Selecciona un veh&iacute;culo</option>
+            @for (v of vehiculos; track v.id) {
+              <option [ngValue]="v.id">{{ v.placa }} - {{ v.marca | titlecase }} {{ v.modelo | titlecase }}</option>
+            }
+          </select>
+          @if (espacioForm.controls.vehiculoId.hasError('required') && espacioForm.controls.vehiculoId.touched) {
+            <small class="field-error">Selecciona un veh&iacute;culo</small>
+          }
+        </label>
+      }
+
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" (click)="cerrarModal()">Cancelar</button>
+        <button type="submit" class="btn-save" [disabled]="saving">{{ submitText }}</button>
+      </div>
+    </form>
+  </div>
+</aside>

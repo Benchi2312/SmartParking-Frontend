@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, signal } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { LoadingService } from './services/loading.service';
 
 @Component({
@@ -8,10 +9,25 @@ import { LoadingService } from './services/loading.service';
   standalone: true,
   imports: [CommonModule, RouterOutlet],
   templateUrl: './app.html',
-  styleUrls: ['./app.css'] // 
+  styleUrls: ['./app.css']
 })
-export class App {
-  protected readonly title = signal('smart-parking-frontend');
+export class App implements AfterViewInit, OnDestroy {
+  loading = false;
+  private loadingSub: Subscription | null = null;
 
-  constructor(public loadingService: LoadingService) {}
+  constructor(
+    private loadingService: LoadingService,
+    private cdr: ChangeDetectorRef
+  ) {}
+
+  ngAfterViewInit() {
+    this.loadingSub = this.loadingService.loading$.subscribe((v) => {
+      this.loading = v;
+      this.cdr.detectChanges();
+    });
+  }
+
+  ngOnDestroy() {
+    this.loadingSub?.unsubscribe();
+  }
 }

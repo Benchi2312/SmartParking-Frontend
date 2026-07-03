@@ -16,6 +16,10 @@ export class EspacioService {
     return this.http.get<Espacio[]>(this.apiUrl);
   }
 
+  getEspaciosDisponibles(): Observable<Espacio[]> {
+    return this.http.get<Espacio[]>(`${this.apiUrl}/disponibles`);
+  }
+
   crearEspacio(espacio: CrearEspacioRequest): Observable<Espacio> {
     return this.http.post<Espacio>(this.apiUrl, espacio);
   }
@@ -26,5 +30,9 @@ export class EspacioService {
 
   eliminarEspacio(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  liberarEspacio(id: number): Observable<Espacio> {
+    return this.http.post<Espacio>(`${this.apiUrl}/${id}/liberar`, {});
   }
 }

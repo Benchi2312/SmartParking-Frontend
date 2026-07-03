@@ -313,6 +313,123 @@
   line-height: 1.7;
 }
 
+.alert-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 20px;
+  border-radius: 16px;
+  font-size: 14px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.alert-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.alert-body {
+  flex: 1;
+}
+
+.alert-title {
+  margin: 0 0 4px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.alert-desc {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.alert-error {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+}
+
+.alert-error .alert-icon {
+  background: rgba(239, 68, 68, 0.25);
+  color: #fca5a5;
+}
+
+.alert-error .alert-title {
+  color: #fecaca;
+}
+
+.alert-error .alert-desc {
+  color: rgba(252, 165, 165, 0.85);
+}
+
+.alert-warning {
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #fcd34d;
+}
+
+.alert-warning .alert-icon {
+  background: rgba(245, 158, 11, 0.25);
+  color: #fcd34d;
+}
+
+.alert-warning .alert-title {
+  color: #fde68a;
+}
+
+.alert-warning .alert-desc {
+  color: rgba(252, 211, 77, 0.85);
+}
+
+.alert-success {
+  background: rgba(59, 130, 246, 0.12);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: #93c5fd;
+}
+
+.alert-success .alert-icon {
+  background: rgba(59, 130, 246, 0.25);
+  color: #93c5fd;
+}
+
+.alert-success .alert-title {
+  color: #bfdbfe;
+}
+
+.alert-success .alert-desc {
+  color: rgba(147, 197, 253, 0.85);
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badge-pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.badge-confirmed {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.badge-rejected {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
 .detail-list,
 .info-grid {
   display: grid;
@@ -325,6 +442,10 @@
   padding: 18px;
   border-radius: 18px;
   background: #f8fafc;
+}
+
+.detail-list .detail-full {
+  grid-column: 1 / -1;
 }
 
 .detail-list strong,
@@ -382,7 +503,8 @@
 }
 
 .reservation-form input,
-.reservation-form select {
+.reservation-form select,
+.reservation-status {
   width: 100%;
   min-height: 42px;
   padding: 10px 12px;
@@ -391,6 +513,22 @@
   background: #ffffff;
   color: #0f172a;
   font: inherit;
+}
+
+.reservation-status {
+  display: grid;
+  gap: 4px;
+}
+
+.reservation-status span {
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.reservation-status strong {
+  color: #0f172a;
+  font-size: 14px;
 }
 
 .reservation-submit {

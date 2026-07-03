@@ -3,10 +3,10 @@
     <h2>Smart Parking</h2>
 
     <nav>
-      <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
-      <a routerLink="/dashboard/vehiculos" routerLinkActive="active">Vehiculos</a>
-      <a routerLink="/dashboard/espacios" routerLinkActive="active">Espacios</a>
-      <a routerLink="/dashboard/usuarios" routerLinkActive="active">Usuarios</a>
+      <a routerLink="/admin/dashboard" routerLinkActive="bg-slate-700 text-white">Dashboard</a>
+      <a routerLink="/admin/vehiculos" routerLinkActive="bg-slate-700 text-white">Vehiculos</a>
+      <a routerLink="/admin/espacios" routerLinkActive="bg-slate-700 text-white">Espacios</a>
+      <a routerLink="/admin/usuarios" routerLinkActive="bg-slate-700 text-white">Usuarios</a>
       <a (click)="logout()">Cerrar sesion</a>
     </nav>
   </aside>
@@ -22,128 +22,6 @@
         <span>{{ userName }}</span>
       </div>
     </header>
-
-    <p class="state-message" *ngIf="loading">Cargando informacion...</p>
-    <p class="state-message error" *ngIf="error">{{ error }}</p>
-
-    <section class="cards">
-      <div class="card">
-        <p>Total Vehiculos</p>
-        <h2>{{ vehiculosTotal }}</h2>
-      </div>
-
-      <div class="card">
-        <p>Espacios Ocupados</p>
-        <h2>{{ espaciosOcupados }}</h2>
-      </div>
-
-      <div class="card">
-        <p>Espacios Reservados</p>
-        <h2>{{ espaciosReservados }}</h2>
-      </div>
-
-      <div class="card">
-        <p>Usuarios</p>
-        <h2>{{ usuariosTotal }}</h2>
-      </div>
-    </section>
-
-    <section class="admin-grid">
-      <article class="data-panel">
-        <div class="panel-header">
-          <div>
-            <p>Vehiculos reales</p>
-            <h3>Registrados</h3>
-          </div>
-        </div>
-
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>Placa</th>
-                <th>Marca</th>
-                <th>Modelo</th>
-                <th>Usuario</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let vehiculo of vehiculos">
-                <td>{{ vehiculo.placa }}</td>
-                <td>{{ vehiculo.marca }}</td>
-                <td>{{ vehiculo.modelo }}</td>
-                <td>{{ vehiculo.usuarioNombre || vehiculo.usuarioEmail || '-' }}</td>
-              </tr>
-              <tr *ngIf="!loading && vehiculos.length === 0">
-                <td colspan="4">No hay vehiculos registrados</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </article>
-
-      <article class="data-panel">
-        <div class="panel-header">
-          <div>
-            <p>Espacios reales</p>
-            <h3>Estado actual</h3>
-          </div>
-        </div>
-
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>Numero</th>
-                <th>Estado</th>
-                <th>Vehiculo</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let espacio of espacios">
-                <td>{{ espacio.numero }}</td>
-                <td>{{ espacio.estado }}</td>
-                <td>{{ espacio.vehiculo?.placa || '-' }}</td>
-              </tr>
-              <tr *ngIf="!loading && espacios.length === 0">
-                <td colspan="3">No hay espacios registrados</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </article>
-
-      <article class="data-panel full-width">
-        <div class="panel-header">
-          <div>
-            <p>Historial real</p>
-            <h3>Reservas</h3>
-          </div>
-        </div>
-
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>Fecha</th>
-                <th>Estado</th>
-                <th>Vehiculo</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let reserva of reservas">
-                <td>{{ reserva.fecha }}</td>
-                <td>{{ reserva.estado }}</td>
-                <td>{{ reserva.vehiculo?.placa || '-' }}</td>
-              </tr>
-              <tr *ngIf="!loading && reservas.length === 0">
-                <td colspan="3">No hay reservas registradas</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </article>
-    </section>
 
     <section class="view">
       <router-outlet></router-outlet>

@@ -26,7 +26,7 @@
       <tr *ngFor="let espacio of espacios">
         <td>{{ espacio.numero }}</td>
         <td>
-          <span class="status" [class.free]="espacio.estado === 'LIBRE'" [class.reserved]="espacio.estado === 'RESERVADO'">
+          <span class="status" [class.free]="espacio.estado === 'LIBRE'">
             {{ espacio.estado }}
           </span>
         </td>
@@ -64,7 +64,6 @@
       <select formControlName="estado">
         <option value="LIBRE">LIBRE</option>
         <option value="OCUPADO">OCUPADO</option>
-        <option value="RESERVADO">RESERVADO</option>
       </select>
     </label>
 
@@ -87,4 +86,20 @@
       <button class="cancel" type="button" (click)="cerrarModal()" [disabled]="saving">Cancelar</button>
     </div>
   </form>
+</div>
+
+<div class="modal" *ngIf="espacioPendienteEliminar">
+  <div class="modal-content confirm-card">
+    <h3>Eliminar espacio</h3>
+    <p>
+      Esta accion eliminara el espacio
+      <strong>{{ espacioPendienteEliminar.numero }}</strong>.
+    </p>
+    <div class="actions">
+      <button class="delete" type="button" (click)="confirmarEliminacion()" [disabled]="!!deletingId">
+        {{ deletingId ? 'Eliminando...' : 'Eliminar' }}
+      </button>
+      <button class="cancel" type="button" (click)="cancelarEliminacion()" [disabled]="!!deletingId">Cancelar</button>
+    </div>
+  </div>
 </div>

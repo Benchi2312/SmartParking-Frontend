@@ -2,7 +2,7 @@
 .layout {
   display: flex;
   height: 100vh;
-  background: #f8fafc;
+  background: #020617;
   font-family: 'Inter', sans-serif;
 }
 
@@ -43,6 +43,7 @@
 .content {
   flex: 1;
   padding: 30px 40px;
+  background: #0f172a;
 }
 
 /* TOPBAR */
@@ -55,6 +56,7 @@
 .topbar h1 {
   font-size: 26px;
   font-weight: 600;
+  color: #f8fafc;
 }
 
 .subtitle {
@@ -63,123 +65,16 @@
 }
 
 .user-box {
-  background: #fff;
+  background: #1e293b;
   padding: 10px 16px;
   border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  border: 1px solid rgba(51, 65, 85, 0.4);
   font-size: 14px;
+  color: #e2e8f0;
 }
 
-/* CARDS */
-.cards {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
-  margin-top: 25px;
-}
-
-.card {
-  background: #fff;
-  padding: 20px;
-  border-radius: 16px;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.05);
-  transition: 0.2s ease;
-}
-
-.card:hover {
-  transform: translateY(-4px);
-}
-
-.card p {
-  font-size: 13px;
-  color: #6b7280;
-  margin-bottom: 8px;
-}
-
-.card h2 {
-  font-size: 26px;
-  font-weight: 600;
-}
-
-/* VIEW */
 .view {
   margin-top: 30px;
-}
-
-.state-message {
-  margin: 18px 0 0;
-  color: #475569;
-  font-size: 14px;
-}
-
-.state-message.error {
-  color: #b91c1c;
-}
-
-.admin-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
-  margin-top: 25px;
-}
-
-.data-panel {
-  background: #fff;
-  border-radius: 16px;
-  padding: 20px;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.05);
-}
-
-.data-panel.full-width {
-  grid-column: 1 / -1;
-}
-
-.panel-header {
-  margin-bottom: 14px;
-}
-
-.panel-header p {
-  margin: 0 0 4px;
-  color: #64748b;
-  font-size: 13px;
-}
-
-.panel-header h3 {
-  margin: 0;
-  color: #0f172a;
-  font-size: 18px;
-}
-
-.table-wrapper {
-  overflow-x: auto;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th,
-td {
-  padding: 12px 10px;
-  border-bottom: 1px solid #e2e8f0;
-  text-align: left;
-  font-size: 13px;
-}
-
-th {
-  color: #64748b;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-td {
-  color: #0f172a;
-}
-
-tbody tr:last-child td {
-  border-bottom: none;
 }
 
 @media (max-width: 900px) {
@@ -188,8 +83,12 @@ tbody tr:last-child td {
     min-height: 100vh;
   }
 
-  .admin-grid,
-  .cards {
-    grid-template-columns: 1fr;
+  .content {
+    padding: 22px;
+  }
+
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }

@@ -1,9 +1,10 @@
 import { Routes } from '@angular/router';
-import { ListUsuariosComponent } from './features/usuarios/list-usuarios/list-usuarios.component';
 
 import { DashboardComponent } from './features/dashboard/dashboard/dashboard.component';
-import { ListVehiculosComponent } from './features/vehiculos/list-vehiculos/list-vehiculos.component';
-import { ListEspaciosComponent } from './features/espacios/list-espacios/list-espacios.component';
+import { AdminDashboardContentComponent } from './features/dashboard/admin-dashboard/admin-dashboard.component';
+import { AdminVehiculosComponent } from './features/dashboard/admin-vehiculos/admin-vehiculos.component';
+import { AdminEspaciosComponent } from './features/dashboard/admin-espacios/admin-espacios.component';
+import { AdminUsuariosComponent } from './features/dashboard/admin-usuarios/admin-usuarios.component';
 import { LoginComponent } from './features/auth/login/login.component';
 import { RegisterComponent } from './features/auth/register/register.component';
 import { DashboardUserComponent } from './features/user/dashboard-user/dashboard-user.component';
@@ -18,14 +19,15 @@ export const routes: Routes = [
   { path: 'user', component: DashboardUserComponent, canActivate: [userGuard] },
 
   {
-    path: 'dashboard',
+    path: 'admin',
     component: DashboardComponent,
     canActivate: [adminGuard],
     children: [
-      { path: '', redirectTo: 'vehiculos', pathMatch: 'full' },
-      { path: 'vehiculos', component: ListVehiculosComponent },
-      { path: 'espacios', component: ListEspaciosComponent },
-      { path: 'usuarios', component: ListUsuariosComponent }
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: 'dashboard', component: AdminDashboardContentComponent },
+      { path: 'vehiculos', component: AdminVehiculosComponent },
+      { path: 'espacios', component: AdminEspaciosComponent },
+      { path: 'usuarios', component: AdminUsuariosComponent }
     ]
   }
 ];

@@ -2,150 +2,94 @@
 
 ## 1. Descripción del Proyecto
 
-Este proyecto corresponde al frontend del sistema Smart Parking, desarrollado con Angular.
+Frontend del sistema Smart Parking, desarrollado con Angular standalone. Proporciona una interfaz moderna para la gestión de estacionamientos con dashboards para administradores y usuarios.
 
-Permite la interacción visual con el sistema mediante:
+### Funcionalidades principales
 
-- login y registro
-- dashboard de administrador
-- dashboard de usuario
-- gestión de vehículos
-- gestión de espacios
-- reservas
-- visualización de historial
-
-El frontend consume una API REST desarrollada con Spring Boot.
-
----
-
-# 2. Tecnologías Utilizadas
-
-- Angular 21
-- TypeScript
-- RxJS
-- Bootstrap 5
-- Angular Router
-- Reactive Forms
+- Autenticación con JWT (login/registro)
+- Dashboard de administrador con métricas
+- Dashboard de usuario con espacios y reservas
+- CRUD de vehículos (con validación de propietario)
+- CRUD de espacios de estacionamiento
+- Sistema de reservas (crear, aprobar, rechazar)
+- Asignación y liberación de espacios
+- Protección de rutas por roles (ADMIN/USER)
 
 ---
 
-# 3. Arquitectura del Proyecto
+## 2. Tecnologías Utilizadas
 
-El proyecto utiliza Angular standalone components y está organizado por módulos funcionales.
+| Tecnología | Versión |
+|---|---|
+| Angular | 21 |
+| TypeScript | 5.9 |
+| RxJS | 7.8 |
+| Bootstrap 5 | 5.3 |
+| Tailwind CSS | 4 |
+| SweetAlert2 | 11 |
+| Vitest + jsdom | 4 |
+| Express (SSR) | 5 |
 
-```text
+---
+
+## 3. Arquitectura del Proyecto
+
+El proyecto usa **Angular standalone components** con estructura modular por funcionalidad.
+
+```
 src/app/
+├── core/               → Guards (auth, admin, user) e interceptors HTTP
+│   └── services/interceptors/  → auth.interceptor, loading.interceptor
+├── features/
+│   ├── auth/           → Login, Register
+│   ├── dashboard/      → Layout admin + secciones (vehículos, espacios, usuarios)
+│   ├── espacios/       → Listado público de espacios
+│   ├── user/           → Dashboard de usuario con fragmentos
+│   ├── usuarios/       → Listado de usuarios (admin)
+│   └── vehiculos/      → CRUD de vehículos reutilizable
+├── models/             → Interfaces TypeScript (Usuario, Vehiculo, Espacio, Reserva)
+├── pages/home/         → Landing page
+└── services/           → Servicios HTTP (auth, vehiculo, espacio, reserva, loading, error-message)
 ```
 
-## Estructura
+### Patrón de modales
 
-```text
-core/            -> Guards e interceptors
-features/        -> Componentes principales
-models/          -> Interfaces TypeScript
-services/        -> Servicios HTTP
-```
+Los modales utilizan `*ngIf` para control de presencia en el DOM combinado con CSS `display: flex`, evitando conflictos con Bootstrap global (`.modal { display: none; }`).
 
 ---
 
-# 4. Funcionalidades Implementadas
+## 4. Rutas Principales
 
-## Autenticación
-
-- login
-- registro
-- manejo de sesión JWT
-- guards por roles
-
----
-
-## Dashboard USER
-
-El usuario puede:
-
-- registrar vehículos
-- editar vehículos
-- eliminar vehículos
-- visualizar espacio asignado
-- visualizar historial
-- crear reservas
+| Ruta | Acceso | Descripción |
+|---|---|---|
+| `/` | Público | Landing page |
+| `/login` | Público | Inicio de sesión |
+| `/register` | Público | Registro de usuario |
+| `/user` | USER | Dashboard de usuario |
+| `/dashboard` | ADMIN | Dashboard de administrador |
+| `/dashboard/vehiculos` | ADMIN | Gestión de vehículos |
+| `/dashboard/espacios` | ADMIN | Gestión de espacios |
+| `/dashboard/usuarios` | ADMIN | Listado de usuarios |
 
 ---
 
-## Dashboard ADMIN
+## 5. Configuración y Ejecución
 
-El administrador puede:
+### Requisitos
 
-- visualizar usuarios
-- visualizar vehículos
-- administrar espacios
-- asignar espacios
-- cambiar estados de espacios
-- visualizar métricas generales
+- Node.js 18+
+- npm 10+
 
----
-
-# 5. Rutas Principales
-
-## Públicas
-
-```text
-/
-```
-
-```text
-/login
-```
-
-```text
-/register
-```
-
----
-
-## USER
-
-```text
-/user
-```
-
----
-
-## ADMIN
-
-```text
-/dashboard
-```
-
----
-
-# 6. Configuración del Proyecto
-
-## Instalar dependencias
-
-Entrar a la carpeta del proyecto:
+### Instalar dependencias
 
 ```bash
 cd smart-parking-frontend
-```
-
-Instalar paquetes:
-
-```bash
 npm install
 ```
 
----
+### Configurar entorno
 
-# 7. Configuración Backend
-
-Verificar archivo:
-
-```text
-src/environments/environment.ts
-```
-
-Debe apuntar al backend:
+Editar `src/environments/environment.ts`:
 
 ```ts
 export const environment = {
@@ -154,31 +98,15 @@ export const environment = {
 };
 ```
 
----
-
-# 8. Ejecutar el Proyecto
-
-## Ejecutar Angular
+### Iniciar servidor de desarrollo
 
 ```bash
 npm start
 ```
 
-o:
+Abrir en: `http://localhost:4200`
 
-```bash
-ng serve
-```
-
-Abrir en navegador:
-
-```text
-http://localhost:4200
-```
-
----
-
-# 9. Build de Producción
+### Build de producción
 
 ```bash
 npm run build
@@ -186,59 +114,46 @@ npm run build
 
 ---
 
-# 10. Flujo General del Sistema
+## 6. Pruebas
 
-## USER
+Se utiliza **Vitest** con jsdom para pruebas unitarias de componentes.
 
-1. Se registra
-2. Inicia sesión
-3. Registra vehículos
-4. Gestiona sus vehículos
-5. Visualiza su espacio
-6. Crea reservas
-7. Consulta historial
+```bash
+npm test
+```
 
 ---
 
-## ADMIN
+## 7. Seguridad
+
+- Autenticación mediante JWT almacenado en localStorage
+- Interceptor HTTP que adjunta token automáticamente
+- Guards de ruta para ADMIN y USER
+- Normalización de roles (ROLE_ADMIN → ADMIN, etc.)
+
+---
+
+## 8. Flujo General
+
+### Usuario (USER)
+
+1. Se registra e inicia sesión
+2. Registra sus vehículos
+3. Visualiza espacios disponibles
+4. Crea reservas
+5. Consulta historial de reservas
+
+### Administrador (ADMIN)
 
 1. Inicia sesión
-2. Visualiza dashboard general
-3. Administra espacios
-4. Visualiza usuarios
-5. Visualiza vehículos
-6. Gestiona estados de espacios
+2. Visualiza dashboard con métricas
+3. Administra espacios (crear, editar, eliminar, liberar)
+4. Visualiza vehículos y usuarios
+5. Aprueba o rechaza reservas pendientes
 
 ---
 
-# 11. Seguridad Implementada
-
-El frontend utiliza:
-
-- JWT Authentication
-- HTTP Interceptors
-- Route Guards
-- Protección por roles ADMIN y USER
-
----
-
-# 12. Evidencias del Funcionamiento
-
-
-
-- Login
-- Registro
-- Dashboard USER
-- Dashboard ADMIN
-- CRUD de vehículos
-- CRUD de espacios
-- Reservas
-- Historial
-- Guards funcionando
-
----
-
-# 13. Integrantes
+## 9. Integrantes
 
 - Benjamin Correa
 - Jaime Guevara
@@ -246,16 +161,13 @@ El frontend utiliza:
 
 ---
 
-# 14. Estado Actual del Proyecto
+## 10. Estado Actual
 
-Actualmente el frontend cuenta con:
-
-- autenticación JWT
-- guards por roles
-- dashboards funcionales
-- CRUD de vehículos
-- CRUD de espacios
-- reservas básicas
-- diseño responsive
-- integración completa con backend Spring Boot
-# SmartParking-Frontend
+- Autenticación JWT funcional
+- Guards por roles operativos
+- Dashboards conectados al backend
+- CRUD completo de vehículos y espacios
+- Sistema de reservas (crear, aprobar, rechazar)
+- Diseño responsive con glassmorphism
+- Integración total con API Spring Boot
+- SSR con Angular Universal
