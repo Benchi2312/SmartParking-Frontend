@@ -10,6 +10,9 @@ export interface Reserva {
   vehiculo?: Vehiculo;
   espacio?: Espacio;
   canceladoPor?: string | null;
+  horaInicio?: string | null;
+  horaFin?: string | null;
+  costoTotal?: number | null;
 }
 
 export interface CrearReservaRequest {

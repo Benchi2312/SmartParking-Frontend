@@ -1,11 +1,13 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, Inject, OnInit, PLATFORM_ID, ViewChild } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { forkJoin } from 'rxjs';
 import { Chart, registerables } from 'chart.js';
 
 import { Espacio } from '../../../models/espacio.model';
 import { Reserva } from '../../../models/reserva.model';
 import { AuthService } from '../../../services/auth.service';
+import { ConfiguracionService } from '../../../services/configuracion.service';
 import { ErrorMessageService } from '../../../services/error-message.service';
 import { EspacioService } from '../../../services/espacio.service';
 import { ReservaService } from '../../../services/reserva.service';
@@ -16,7 +18,7 @@ Chart.register(...registerables);
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.css']
 })
@@ -25,6 +27,12 @@ export class AdminDashboardContentComponent implements OnInit, AfterViewInit {
   usuariosTotal: number = 0;
   espaciosOcupados: number = 0;
   reservasPendientes: number = 0;
+  ingresosTotales: number = 0;
+  tarifaPorHora: number = 0;
+  nuevaTarifa: number = 0;
+  tarifaSaving: boolean = false;
+  tarifaError: string = '';
+  tarifaSuccess: string = '';
   procesandoId: number | null = null;
   pendientes: Reserva[] = [];
   loading: boolean = false;
@@ -45,6 +53,7 @@ export class AdminDashboardContentComponent implements OnInit, AfterViewInit {
     private espacioService: EspacioService,
     private reservaService: ReservaService,
     private authService: AuthService,
+    private configuracionService: ConfiguracionService,
     private errorMessageService: ErrorMessageService,
     private cdr: ChangeDetectorRef,
     @Inject(PLATFORM_ID) platformId: object
@@ -72,9 +81,10 @@ export class AdminDashboardContentComponent implements OnInit, AfterViewInit {
       pendientes: this.reservaService.listarPendientes(),
       espacios: this.espacioService.getEspacios(),
       usuarios: this.authService.getUsuarios(),
-      reservas: this.reservaService.listarReservas()
+      reservas: this.reservaService.listarReservas(),
+      tarifa: this.configuracionService.getTarifa()
     }).subscribe({
-      next: ({ vehiculos, pendientes, espacios, usuarios, reservas }) => {
+      next: ({ vehiculos, pendientes, espacios, usuarios, reservas, tarifa }) => {
         this.pendientes = pendientes;
         this.vehiculosTotal = vehiculos.length;
         this.espaciosOcupados = espacios.filter((esp) => esp.estado === 'OCUPADO').length;
@@ -82,6 +92,11 @@ export class AdminDashboardContentComponent implements OnInit, AfterViewInit {
         this.reservasPendientes = pendientes.length;
         this.espacios = espacios;
         this.reservas = reservas;
+        this.tarifaPorHora = tarifa;
+        this.nuevaTarifa = tarifa;
+        this.ingresosTotales = reservas
+          .filter(r => r.costoTotal != null)
+          .reduce((sum, r) => sum + r.costoTotal!, 0);
         this.loading = false;
         this.cdr.detectChanges();
         this.actualizarGraficos();
@@ -198,6 +213,27 @@ export class AdminDashboardContentComponent implements OnInit, AfterViewInit {
     });
   }
 
+  actualizarTarifa() {
+    if (this.tarifaSaving || this.nuevaTarifa <= 0) { return; }
+    this.tarifaSaving = true;
+    this.tarifaError = '';
+    this.tarifaSuccess = '';
+
+    this.configuracionService.actualizarTarifa(this.nuevaTarifa).subscribe({
+      next: (tarifa) => {
+        this.tarifaPorHora = tarifa;
+        this.tarifaSaving = false;
+        this.tarifaSuccess = 'Tarifa actualizada correctamente';
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.tarifaSaving = false;
+        this.tarifaError = this.errorMessageService.fromBackend(err, 'No se pudo actualizar la tarifa');
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
   getEstadoLabel(estado: string): string {
     switch (estado) {
       case 'PENDIENTE': return 'Pendiente';
@@ -207,11 +243,12 @@ export class AdminDashboardContentComponent implements OnInit, AfterViewInit {
     }
   }
 
-  getEstadoClass(estado: string): string {
+  getEstadoClass(estado: string | null | undefined): string {
     switch (estado) {
       case 'PENDIENTE': return 'badge badge-pending';
       case 'CONFIRMADA': return 'badge badge-confirmed';
       case 'CANCELADA': return 'badge badge-rejected';
+      case 'FINALIZADA': return 'badge badge-finished';
       default: return 'badge';
     }
   }

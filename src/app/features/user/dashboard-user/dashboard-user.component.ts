@@ -216,13 +216,13 @@ export class DashboardUserComponent implements OnInit, OnDestroy {
     this.filterFechaHasta = '';
   }
 
-  getEstadoLabel(estado: string): string {
+  getEstadoLabel(estado: string | null | undefined): string {
     switch (estado) {
       case 'PENDIENTE': return 'Pendiente';
       case 'CONFIRMADA': return 'Confirmada';
       case 'CANCELADA': return 'Cancelada';
       case 'FINALIZADA': return 'Finalizada';
-      default: return estado;
+      default: return estado || 'Sin estado';
     }
   }
 
@@ -282,11 +282,12 @@ export class DashboardUserComponent implements OnInit, OnDestroy {
     }
   }
 
-  getEstadoClass(estado: string): string {
+  getEstadoClass(estado: string | null | undefined): string {
     switch (estado) {
       case 'PENDIENTE': return 'badge badge-pending';
       case 'CONFIRMADA': return 'badge badge-confirmed';
       case 'CANCELADA': return 'badge badge-rejected';
+      case 'FINALIZADA': return 'badge badge-finished';
       default: return 'badge';
     }
   }

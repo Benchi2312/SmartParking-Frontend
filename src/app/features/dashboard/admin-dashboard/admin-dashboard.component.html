@@ -19,6 +19,10 @@
     <p>Reservas Pendientes</p>
     <h2>{{ reservasPendientes }}</h2>
   </div>
+  <div class="card card-highlight">
+    <p>Ingresos Totales</p>
+    <h2>${{ ingresosTotales | number:'1.2-2' }}</h2>
+  </div>
 </section>
 
 <section class="charts">
@@ -33,6 +37,33 @@
     <div class="chart-wrapper">
       <canvas #barraCanvas></canvas>
     </div>
+  </div>
+</section>
+
+<section class="data-panel tarifa-panel">
+  <div class="panel-header">
+    <div>
+      <p>Configuracion del sistema</p>
+      <h3>Tarifa por hora</h3>
+    </div>
+  </div>
+  <div class="tarifa-form">
+    <div class="tarifa-info">
+      <span class="tarifa-label">Tarifa actual</span>
+      <strong class="tarifa-valor">${{ tarifaPorHora | number:'1.2-2' }}</strong>
+      <span class="tarifa-desc">Costo base por hora de estacionamiento</span>
+    </div>
+    <div class="tarifa-editor">
+      <label>
+        <span>Nueva tarifa ($)</span>
+        <input type="number" step="0.01" min="0.01" [(ngModel)]="nuevaTarifa" class="tarifa-input">
+      </label>
+      <button class="btn-guardar-tarifa" (click)="actualizarTarifa()" [disabled]="tarifaSaving || nuevaTarifa <= 0">
+        {{ tarifaSaving ? 'Guardando...' : 'Guardar' }}
+      </button>
+    </div>
+    <p class="state-message success" *ngIf="tarifaSuccess">{{ tarifaSuccess }}</p>
+    <p class="state-message error" *ngIf="tarifaError">{{ tarifaError }}</p>
   </div>
 </section>
 
