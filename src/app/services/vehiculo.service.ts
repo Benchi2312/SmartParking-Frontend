@@ -32,6 +32,10 @@ export class VehiculoService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
+  listarMisVehiculos(): Observable<Vehiculo[]> {
+    return this.http.get<Vehiculo[]>(`${this.apiUrl}/mis-vehiculos`);
+  }
+
   getVehiculosByUsuario(usuarioId: number): Observable<Vehiculo[]> {
     return this.listarVehiculos(usuarioId);
   }

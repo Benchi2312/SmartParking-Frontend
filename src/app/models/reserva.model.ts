@@ -9,6 +9,7 @@ export interface Reserva {
   usuario?: Usuario;
   vehiculo?: Vehiculo;
   espacio?: Espacio;
+  canceladoPor?: string | null;
 }
 
 export interface CrearReservaRequest {

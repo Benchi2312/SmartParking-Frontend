@@ -1,21 +1,27 @@
 <div class="layout">
-  <aside class="sidebar">
-    <h2>Smart Parking</h2>
+  <aside class="sidebar" [class.open]="sidebarOpen">
+    <div class="sidebar-brand">
+      <div class="brand-icon">SP</div>
+      <h2>Smart Parking</h2>
+    </div>
 
-    <nav>
-      <a routerLink="/admin/dashboard" routerLinkActive="bg-slate-700 text-white">Dashboard</a>
-      <a routerLink="/admin/vehiculos" routerLinkActive="bg-slate-700 text-white">Vehiculos</a>
-      <a routerLink="/admin/espacios" routerLinkActive="bg-slate-700 text-white">Espacios</a>
-      <a routerLink="/admin/usuarios" routerLinkActive="bg-slate-700 text-white">Usuarios</a>
-      <a (click)="logout()">Cerrar sesion</a>
+    <nav (click)="closeSidebar()">
+      <a class="nav-item" routerLink="/admin/dashboard" routerLinkActive="active">Dashboard</a>
+      <a class="nav-item" routerLink="/admin/vehiculos" routerLinkActive="active">Vehiculos</a>
+      <a class="nav-item" routerLink="/admin/espacios" routerLinkActive="active">Espacios</a>
+      <a class="nav-item" routerLink="/admin/usuarios" routerLinkActive="active">Usuarios</a>
+      <a class="nav-item nav-logout" (click)="logout()">Cerrar sesion</a>
     </nav>
   </aside>
 
+  <div class="sidebar-overlay" [class.show]="sidebarOpen" (click)="closeSidebar()"></div>
+
   <main class="content">
     <header class="topbar">
+      <button class="hamburger" (click)="toggleSidebar()" aria-label="Toggle sidebar">&#9776;</button>
       <div>
-        <h1>Dashboard</h1>
-        <p class="subtitle">Resumen general del sistema</p>
+        <h1>{{ pageTitle }}</h1>
+        <p class="subtitle">{{ pageSubtitle }}</p>
       </div>
 
       <div class="user-box">
@@ -26,5 +32,7 @@
     <section class="view">
       <router-outlet></router-outlet>
     </section>
+
+    <app-footer/>
   </main>
 </div>

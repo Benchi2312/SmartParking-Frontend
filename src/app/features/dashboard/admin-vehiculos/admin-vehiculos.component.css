@@ -166,12 +166,61 @@ tbody tr:last-child td {
   cursor: not-allowed;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 720px) {
   .table-wrapper {
-    overflow-x: auto;
+    overflow: visible;
+  }
+
+  thead {
+    display: none;
+  }
+
+  .table-wrapper table,
+  .table-wrapper tbody,
+  .table-wrapper tr {
+    display: block;
   }
 
   table {
-    min-width: 600px;
+    min-width: 0;
+    background: transparent;
+  }
+
+  tr {
+    background: #fff;
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+
+  td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border: none;
+    font-size: 14px;
+  }
+
+  td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #64748b;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    flex-shrink: 0;
+  }
+
+  td:last-child {
+    padding-top: 12px;
+    border-top: 1px solid #e2e8f0;
+    margin-top: 8px;
+  }
+
+  td:last-child::before {
+    display: none;
   }
 }

@@ -12,5 +12,4 @@ export interface CrearVehiculoRequest {
   placa: string;
   marca: string;
   modelo: string;
-  usuarioId?: number;
 }

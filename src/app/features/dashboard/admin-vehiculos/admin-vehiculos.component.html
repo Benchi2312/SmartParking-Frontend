@@ -25,19 +25,19 @@
     </thead>
     <tbody>
       <tr *ngFor="let vehiculo of filteredVehiculos">
-        <td><strong>{{ vehiculo.placa }}</strong></td>
-        <td>{{ vehiculo.marca | titlecase }}</td>
-        <td>{{ vehiculo.modelo | titlecase }}</td>
-        <td>{{ vehiculo.usuarioNombre || '-' }}</td>
-        <td>{{ vehiculo.usuarioEmail || '-' }}</td>
-        <td>
+        <td data-label="Placa"><strong>{{ vehiculo.placa }}</strong></td>
+        <td data-label="Marca">{{ vehiculo.marca | titlecase }}</td>
+        <td data-label="Modelo">{{ vehiculo.modelo | titlecase }}</td>
+        <td data-label="Usuario">{{ vehiculo.usuarioNombre || '-' }}</td>
+        <td data-label="Email">{{ vehiculo.usuarioEmail || '-' }}</td>
+        <td data-label="">
           <button class="btn-delete" *ngIf="vehiculo.id" (click)="eliminarVehiculo(vehiculo.id)" title="Eliminar vehiculo" [disabled]="deletingId === vehiculo.id">
             {{ deletingId === vehiculo.id ? 'Eliminando...' : '🗑️ Eliminar' }}
           </button>
         </td>
       </tr>
       <tr *ngIf="!loading && filteredVehiculos.length === 0">
-        <td colspan="6">
+        <td data-label="" colspan="6">
           {{ vehiculos.length === 0 ? 'No hay vehiculos registrados' : 'Ningun vehiculo coincide con la busqueda' }}
         </td>
       </tr>

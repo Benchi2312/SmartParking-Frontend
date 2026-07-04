@@ -222,7 +222,10 @@ export class ListVehiculosComponent implements OnInit {
     this.loading = true;
     this.error = '';
 
-    this.vehiculoService.listarVehiculos(this.isAdmin ? undefined : usuarioId ?? undefined).subscribe({
+    const request$ = this.isAdmin
+      ? this.vehiculoService.listarVehiculos()
+      : this.vehiculoService.listarMisVehiculos();
+    request$.subscribe({
       next: (vehiculos) => {
         this.vehiculos = vehiculos;
         this.loading = false;

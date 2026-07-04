@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { forkJoin } from 'rxjs';
+import { forkJoin, interval, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 import { Espacio } from '../../../models/espacio.model';
 import { CrearReservaRequest, Reserva } from '../../../models/reserva.model';
@@ -13,6 +14,7 @@ import { EspacioService } from '../../../services/espacio.service';
 import { ReservaService } from '../../../services/reserva.service';
 import { VehiculoService } from '../../../services/vehiculo.service';
 import { ListVehiculosComponent } from '../../vehiculos/list-vehiculos/list-vehiculos.component';
+import { AppFooterComponent } from '../../../shared/components/app-footer/app-footer.component';
 
 type UserSection = 'dashboard' | 'vehiculo' | 'espacio' | 'historial';
 
@@ -25,11 +27,11 @@ type ReservaForm = FormGroup<{
 @Component({
   selector: 'app-dashboard-user',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, ListVehiculosComponent],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, FormsModule, ListVehiculosComponent, AppFooterComponent],
   templateUrl: './dashboard-user.component.html',
   styleUrls: ['./dashboard-user.component.css']
 })
-export class DashboardUserComponent implements OnInit {
+export class DashboardUserComponent implements OnInit, OnDestroy {
   activeSection: UserSection = 'dashboard';
   userName: string = 'Usuario';
   vehiculos: Vehiculo[] = [];
@@ -42,6 +44,15 @@ export class DashboardUserComponent implements OnInit {
   reservaSuccess: string = '';
   reservaError: string = '';
   ultimaReserva: Reserva | null = null;
+  sidebarOpen = false;
+
+  filterEstado: string = '';
+  filterFechaDesde: string = '';
+  filterFechaHasta: string = '';
+
+  private destroy$ = new Subject<void>();
+  private previousEstado: string | null = null;
+  notificacionCambio: boolean = false;
 
   reservaForm: ReservaForm = new FormGroup({
     fecha: new FormControl('', {
@@ -62,7 +73,8 @@ export class DashboardUserComponent implements OnInit {
     private vehiculoService: VehiculoService,
     private espacioService: EspacioService,
     private reservaService: ReservaService,
-    private errorMessageService: ErrorMessageService
+    private errorMessageService: ErrorMessageService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -72,6 +84,25 @@ export class DashboardUserComponent implements OnInit {
     this.route.fragment.subscribe((fragment) => {
       this.activeSection = this.mapFragmentToSection(fragment);
     });
+
+    interval(20000).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
+      this.recargarSilenciosamente();
+    });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  toggleSidebar() {
+    this.sidebarOpen = !this.sidebarOpen;
+  }
+
+  closeSidebar() {
+    this.sidebarOpen = false;
   }
 
   setSection(section: UserSection) {
@@ -166,12 +197,88 @@ export class DashboardUserComponent implements OnInit {
     return this.tieneEspaciosAsignados;
   }
 
+  get filteredReservas(): Reserva[] {
+    return this.reservas.filter((r) => {
+      if (this.filterEstado && r.estado !== this.filterEstado) return false;
+      if (this.filterFechaDesde && r.fecha < this.filterFechaDesde) return false;
+      if (this.filterFechaHasta && r.fecha > this.filterFechaHasta) return false;
+      return true;
+    });
+  }
+
+  get hayFiltrosActivos(): boolean {
+    return !!this.filterEstado || !!this.filterFechaDesde || !!this.filterFechaHasta;
+  }
+
+  limpiarFiltros() {
+    this.filterEstado = '';
+    this.filterFechaDesde = '';
+    this.filterFechaHasta = '';
+  }
+
   getEstadoLabel(estado: string): string {
     switch (estado) {
       case 'PENDIENTE': return 'Pendiente';
       case 'CONFIRMADA': return 'Confirmada';
-      case 'CANCELADA': return 'Rechazada';
+      case 'CANCELADA': return 'Cancelada';
+      case 'FINALIZADA': return 'Finalizada';
       default: return estado;
+    }
+  }
+
+  get ultimaReservaNotificacion(): { alertClass: string; icon: string; title: string; description: string } | null {
+    const r = this.ultimaReserva;
+    if (!r) return null;
+
+    switch (r.estado) {
+      case 'PENDIENTE':
+        return {
+          alertClass: 'alert-warning',
+          icon: '?',
+          title: 'Solicitud en Espera',
+          description: 'Tu solicitud para el espacio esta en cola de revision. El administrador validara el acceso pronto.'
+        };
+      case 'CONFIRMADA':
+        return {
+          alertClass: 'alert-success',
+          icon: '\u2713',
+          title: '\u00a1Reserva Aprobada!',
+          description: r.espacio
+            ? 'Tu reserva para el espacio ' + r.espacio.numero + ' ha sido confirmada. Puedes ocupar tu lugar asignado.'
+            : 'Tu reserva ha sido confirmada. Puedes ocupar tu lugar asignado.'
+        };
+      case 'CANCELADA':
+        if (r.canceladoPor === 'USUARIO') {
+          return {
+            alertClass: 'alert-info',
+            icon: 'i',
+            title: 'Reserva Cancelada',
+            description: 'Has cancelado tu solicitud de estacionamiento correctamente. Si deseas, puedes generar una nueva solicitud.'
+          };
+        }
+        if (r.canceladoPor === 'ADMIN') {
+          return {
+            alertClass: 'alert-error',
+            icon: '!',
+            title: 'Solicitud Rechazada',
+            description: 'Tu ultima solicitud de estacionamiento fue rechazada por la administracion. Por favor, selecciona otro espacio disponible o ponte en contacto con soporte.'
+          };
+        }
+        return {
+          alertClass: 'alert-info',
+          icon: 'i',
+          title: 'Reserva Cancelada',
+          description: 'Esta solicitud fue cancelada.'
+        };
+      case 'FINALIZADA':
+        return {
+          alertClass: 'alert-info',
+          icon: '\u2713',
+          title: 'Vehiculo Liberado',
+          description: 'Tu vehiculo ha salido del recinto exitosamente. El espacio quedo libre y ya puedes generar una nueva solicitud.'
+        };
+      default:
+        return null;
     }
   }
 
@@ -196,22 +303,23 @@ export class DashboardUserComponent implements OnInit {
     }
 
     forkJoin({
-      vehiculos: this.vehiculoService.listarVehiculos(usuarioId),
+      vehiculos: this.vehiculoService.listarMisVehiculos(),
       reservas: this.reservaService.listarMisReservas(),
-      espacios: this.espacioService.getEspacios(),
+      misEspacios: this.espacioService.getMisEspacios(),
       disponibles: this.espacioService.getEspaciosDisponibles(),
       ultimaReserva: this.reservaService.obtenerUltimaReserva()
     }).subscribe({
-      next: ({ vehiculos, reservas, espacios, disponibles, ultimaReserva }) => {
+      next: ({ vehiculos, reservas, misEspacios, disponibles, ultimaReserva }) => {
         this.vehiculos = vehiculos;
         this.reservas = reservas;
+        this.previousEstado = this.ultimaReserva?.estado ?? null;
         this.ultimaReserva = ultimaReserva;
-        const vehiculoIds = new Set(vehiculos.map((vehiculo) => vehiculo.id).filter(Boolean));
-        this.espacios = espacios.filter((espacio) => espacio.vehiculo?.id && vehiculoIds.has(espacio.vehiculo.id));
+        this.espacios = misEspacios;
         this.espaciosDisponibles = disponibles;
         this.preseleccionarVehiculo();
         this.preseleccionarEspacio();
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.vehiculos = [];
@@ -220,7 +328,35 @@ export class DashboardUserComponent implements OnInit {
         this.espaciosDisponibles = [];
         this.ultimaReserva = null;
         this.loading = false;
+        this.cdr.detectChanges();
         this.error = this.errorMessageService.fromBackend(err, 'No se pudo cargar la informacion del dashboard');
+      }
+    });
+  }
+
+  private recargarSilenciosamente() {
+    const usuarioId = this.getUsuarioId();
+    if (!usuarioId) return;
+
+    forkJoin({
+      reservas: this.reservaService.listarMisReservas(),
+      misEspacios: this.espacioService.getMisEspacios(),
+      disponibles: this.espacioService.getEspaciosDisponibles(),
+      ultimaReserva: this.reservaService.obtenerUltimaReserva()
+    }).subscribe({
+      next: ({ reservas, misEspacios, disponibles, ultimaReserva }) => {
+        const estadoAnterior = this.ultimaReserva?.estado ?? null;
+        this.reservas = reservas;
+        this.espacios = misEspacios;
+        this.espaciosDisponibles = disponibles;
+        this.previousEstado = estadoAnterior;
+        this.ultimaReserva = ultimaReserva;
+
+        if (estadoAnterior && estadoAnterior !== (ultimaReserva?.estado ?? null)) {
+          this.notificacionCambio = true;
+          setTimeout(() => this.notificacionCambio = false, 3000);
+        }
+        this.cdr.detectChanges();
       }
     });
   }
@@ -277,6 +413,56 @@ export class DashboardUserComponent implements OnInit {
       error: (err) => {
         this.reservaSaving = false;
         this.reservaError = this.errorMessageService.fromBackend(err, 'No se pudo crear la reserva');
+      }
+    });
+  }
+
+  async cancelarReserva(reserva: Reserva) {
+    if (!reserva.id) {
+      return;
+    }
+
+    const { default: Swal } = await import('sweetalert2');
+    const result = await Swal.fire({
+      title: 'Cancelar reserva',
+      text: `¿Estas seguro de cancelar la reserva del ${reserva.fecha} para el vehiculo ${reserva.vehiculo?.placa || ''}?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#475569',
+      confirmButtonText: 'Si, cancelar',
+      cancelButtonText: 'Volver',
+      background: '#1e293b',
+      color: '#f8fafc'
+    });
+
+    if (!result.isConfirmed) {
+      return;
+    }
+
+    this.reservaService.cancelarReserva(reserva.id).subscribe({
+      next: () => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Cancelada',
+          text: 'La reserva ha sido cancelada correctamente.',
+          background: '#1e293b',
+          color: '#f8fafc',
+          timer: 2000,
+          showConfirmButton: false
+        });
+        this.cargarDatos();
+      },
+      error: (err) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: this.errorMessageService.fromBackend(err, 'No se pudo cancelar la reserva'),
+          background: '#1e293b',
+          color: '#f8fafc',
+          confirmButtonColor: '#475569',
+          confirmButtonText: 'Cerrar'
+        });
       }
     });
   }

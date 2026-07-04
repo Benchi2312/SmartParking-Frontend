@@ -48,4 +48,8 @@ export class ReservaService {
   rechazarReserva(id: number): Observable<Reserva> {
     return this.http.post<Reserva>(`${this.apiUrl}/${id}/rechazar`, {});
   }
+
+  cancelarReserva(id: number): Observable<Reserva> {
+    return this.http.post<Reserva>(`${this.apiUrl}/${id}/cancelar`, {});
+  }
 }
