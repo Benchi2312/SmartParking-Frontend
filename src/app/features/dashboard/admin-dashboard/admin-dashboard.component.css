@@ -12,7 +12,7 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 18px;
-  margin-top: 25px;
+  margin-top: 28px;
 }
 
 .card {
@@ -21,6 +21,8 @@
   border-radius: 16px;
   box-shadow: 0 6px 16px rgba(0,0,0,0.05);
   transition: 0.2s ease;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .card:hover {
@@ -44,6 +46,11 @@
   border-radius: 16px;
   padding: 20px;
   box-shadow: 0 6px 16px rgba(0,0,0,0.05);
+  margin-top: 28px;
+}
+
+.data-panel:last-child {
+  margin-bottom: 0;
 }
 
 .data-panel.full-width {
@@ -123,6 +130,7 @@ tbody tr:last-child td {
 .reserva-actions {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .btn-aprobar,
@@ -160,16 +168,106 @@ tbody tr:last-child td {
   cursor: not-allowed;
 }
 
+.charts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 28px;
+}
+
+.chart-card {
+  background: #fff;
+  padding: 24px 24px 20px;
+  border-radius: 16px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.chart-card p {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 14px;
+  flex-shrink: 0;
+}
+
+.chart-wrapper {
+  position: relative;
+  width: 100%;
+  max-height: 300px;
+  overflow: hidden;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 @media (max-width: 900px) {
   .cards {
     grid-template-columns: 1fr;
   }
 
-  .table-wrapper {
-    overflow-x: auto;
+  .charts {
+    grid-template-columns: 1fr;
   }
 
-  table {
-    min-width: 680px;
+  @media (max-width: 720px) {
+    .table-wrapper {
+      overflow: visible;
+    }
+
+    thead {
+      display: none;
+    }
+
+    .table-wrapper table,
+    .table-wrapper tbody,
+    .table-wrapper tr {
+      display: block;
+    }
+
+    table {
+      min-width: 0;
+      background: transparent;
+    }
+
+    .table-wrapper tr {
+      background: #fff;
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 12px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .table-wrapper td {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border: none;
+      font-size: 14px;
+    }
+
+    .table-wrapper td::before {
+      content: attr(data-label);
+      font-weight: 600;
+      color: #64748b;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      flex-shrink: 0;
+    }
+
+    .table-wrapper td:last-child {
+      padding-top: 12px;
+      border-top: 1px solid #e2e8f0;
+      margin-top: 8px;
+    }
+
+    .table-wrapper td:last-child::before {
+      display: none;
+    }
   }
 }

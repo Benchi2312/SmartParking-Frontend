@@ -24,15 +24,15 @@
 
     <tbody>
       <tr *ngFor="let espacio of espacios">
-        <td>{{ espacio.numero }}</td>
-        <td>
+        <td data-label="Numero">{{ espacio.numero }}</td>
+        <td data-label="Estado">
           <span class="status" [class.free]="espacio.estado === 'LIBRE'">
             {{ espacio.estado }}
           </span>
         </td>
-        <td>{{ espacio.vehiculo?.placa || '-' }}</td>
-        <td>{{ espacio.vehiculo?.usuarioNombre || espacio.vehiculo?.usuarioEmail || '-' }}</td>
-        <td class="row-actions">
+        <td data-label="Vehiculo">{{ espacio.vehiculo?.placa || '-' }}</td>
+        <td data-label="Usuario">{{ espacio.vehiculo?.usuarioNombre || espacio.vehiculo?.usuarioEmail || '-' }}</td>
+        <td data-label="" class="row-actions">
           <button class="edit" type="button" (click)="abrirModalEditar(espacio)" [disabled]="accionesDeshabilitadas(espacio)">
             Editar
           </button>
@@ -42,7 +42,7 @@
         </td>
       </tr>
       <tr *ngIf="!loading && espacios.length === 0">
-        <td colspan="5">No hay espacios registrados</td>
+        <td data-label="" colspan="5">No hay espacios registrados</td>
       </tr>
     </tbody>
   </table>

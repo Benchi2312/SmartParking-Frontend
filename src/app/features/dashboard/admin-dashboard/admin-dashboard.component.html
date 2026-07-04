@@ -21,7 +21,22 @@
   </div>
 </section>
 
-<section class="data-panel full-width" style="margin-top: 25px;">
+<section class="charts">
+  <div class="chart-card">
+    <p>Ocupacion de Espacios</p>
+    <div class="chart-wrapper">
+      <canvas #donaCanvas></canvas>
+    </div>
+  </div>
+  <div class="chart-card">
+    <p>Reservas por Estado</p>
+    <div class="chart-wrapper">
+      <canvas #barraCanvas></canvas>
+    </div>
+  </div>
+</section>
+
+<section class="data-panel full-width">
   <div class="panel-header">
     <div>
       <p>Solicitudes pendientes</p>
@@ -42,11 +57,11 @@
       </thead>
       <tbody>
         <tr *ngFor="let reserva of pendientes">
-          <td>{{ reserva.fecha }}</td>
-          <td><span [class]="getEstadoClass(reserva.estado)">{{ getEstadoLabel(reserva.estado) }}</span></td>
-          <td>{{ reserva.vehiculo?.placa || '-' }}</td>
-          <td>{{ reserva.usuario?.nombre || reserva.usuario?.email || '-' }}</td>
-          <td>
+          <td data-label="Fecha">{{ reserva.fecha }}</td>
+          <td data-label="Estado"><span [class]="getEstadoClass(reserva.estado)">{{ getEstadoLabel(reserva.estado) }}</span></td>
+          <td data-label="Vehiculo">{{ reserva.vehiculo?.placa || '-' }}</td>
+          <td data-label="Usuario">{{ reserva.usuario?.nombre || reserva.usuario?.email || '-' }}</td>
+          <td data-label="">
             <div class="reserva-actions">
               <button class="btn-aprobar" (click)="aprobarReserva(reserva)" [disabled]="procesandoId === reserva.id">
                 {{ procesandoId === reserva.id ? 'Procesando...' : 'Aprobar' }}
@@ -58,7 +73,7 @@
           </td>
         </tr>
         <tr *ngIf="!loading && pendientes.length === 0">
-          <td colspan="5">No hay solicitudes de reserva pendientes</td>
+          <td data-label="" colspan="5">No hay solicitudes de reserva pendientes</td>
         </tr>
       </tbody>
     </table>

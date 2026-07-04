@@ -24,10 +24,10 @@ export const routes: Routes = [
     canActivate: [adminGuard],
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-      { path: 'dashboard', component: AdminDashboardContentComponent },
-      { path: 'vehiculos', component: AdminVehiculosComponent },
-      { path: 'espacios', component: AdminEspaciosComponent },
-      { path: 'usuarios', component: AdminUsuariosComponent }
+      { path: 'dashboard', component: AdminDashboardContentComponent, data: { title: 'Dashboard', subtitle: 'Resumen general del sistema' } },
+      { path: 'vehiculos', component: AdminVehiculosComponent, data: { title: 'Vehículos', subtitle: 'Gestión de vehículos registrados' } },
+      { path: 'espacios', component: AdminEspaciosComponent, data: { title: 'Espacios', subtitle: 'Monitoreo y control de espacios de estacionamiento en tiempo real' } },
+      { path: 'usuarios', component: AdminUsuariosComponent, data: { title: 'Usuarios', subtitle: 'Listado de usuarios registrados' } }
     ]
   }
 ];

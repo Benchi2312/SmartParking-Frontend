@@ -1,10 +1,4 @@
-<div class="section-header">
-  <div class="section-header-left">
-    <h2 class="section-title">Gesti&oacute;n de Espacios</h2>
-    <p class="section-subtitle">Monitoreo y control de espacios de estacionamiento en tiempo real</p>
-  </div>
-  <button (click)="abrirModalCrear()" class="btn-nuevo-espacio">+ Nuevo Espacio</button>
-</div>
+<button (click)="abrirModalCrear()" class="btn-nuevo-espacio">+ Nuevo Espacio</button>
 
 <div class="grid-tarjetas">
   @for (espacio of espacios; track espacio.id) {

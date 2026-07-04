@@ -16,6 +16,10 @@ export class EspacioService {
     return this.http.get<Espacio[]>(this.apiUrl);
   }
 
+  getMisEspacios(): Observable<Espacio[]> {
+    return this.http.get<Espacio[]>(`${this.apiUrl}/mis-espacios`);
+  }
+
   getEspaciosDisponibles(): Observable<Espacio[]> {
     return this.http.get<Espacio[]>(`${this.apiUrl}/disponibles`);
   }

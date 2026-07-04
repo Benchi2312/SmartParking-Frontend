@@ -1,5 +1,5 @@
 <div class="user-layout">
-  <aside class="sidebar">
+  <aside class="sidebar" [class.open]="sidebarOpen">
     <div class="brand">
       <div class="brand-badge">SP</div>
       <div>
@@ -8,7 +8,7 @@
       </div>
     </div>
 
-    <nav class="menu">
+    <nav class="menu" (click)="closeSidebar()">
       <a
         [routerLink]="['/user']"
         fragment="dashboard"
@@ -56,9 +56,12 @@
     </nav>
   </aside>
 
+  <div class="sidebar-overlay" [class.show]="sidebarOpen" (click)="closeSidebar()"></div>
+
   <main class="main-content">
     <header class="topbar">
-      <div>
+      <button class="hamburger" (click)="toggleSidebar()" aria-label="Toggle sidebar">&#9776;</button>
+      <div class="topbar-title">
         <h1 *ngIf="activeSection === 'dashboard'">¡Hola de nuevo, {{ userName }}!</h1>
         <h1 *ngIf="activeSection !== 'dashboard'">{{ sectionTitle }}</h1>
         <p class="subtitle">{{ sectionSubtitle }}</p>
@@ -176,27 +179,19 @@
 
     <section class="content-area" *ngIf="activeSection === 'espacio'">
 
-      <div class="alert-banner alert-error" *ngIf="ultimaReserva?.estado === 'CANCELADA'">
-        <span class="alert-icon">!</span>
+      <div
+        *ngIf="ultimaReservaNotificacion"
+        class="alert-banner"
+        [class.alert-warning]="ultimaReservaNotificacion.alertClass === 'alert-warning'"
+        [class.alert-success]="ultimaReservaNotificacion.alertClass === 'alert-success'"
+        [class.alert-error]="ultimaReservaNotificacion.alertClass === 'alert-error'"
+        [class.alert-info]="ultimaReservaNotificacion.alertClass === 'alert-info'"
+        [class.notificacion-pulso]="notificacionCambio"
+      >
+        <span class="alert-icon">{{ ultimaReservaNotificacion.icon }}</span>
         <div class="alert-body">
-          <h4 class="alert-title">Solicitud Rechazada</h4>
-          <p class="alert-desc">Tu ultima solicitud de estacionamiento fue rechazada por la administracion. Por favor, selecciona otro espacio disponible o ponte en contacto con soporte.</p>
-        </div>
-      </div>
-
-      <div class="alert-banner alert-warning" *ngIf="ultimaReserva?.estado === 'PENDIENTE'">
-        <span class="alert-icon">?</span>
-        <div class="alert-body">
-          <h4 class="alert-title">Solicitud en Espera</h4>
-          <p class="alert-desc">Tu solicitud para el espacio esta en cola de revision. El administrador validara el acceso pronto.</p>
-        </div>
-      </div>
-
-      <div class="alert-banner alert-success" *ngIf="ultimaReserva?.estado === 'FINALIZADA'">
-        <span class="alert-icon">&#10003;</span>
-        <div class="alert-body">
-          <h4 class="alert-title">Vehiculo Liberado</h4>
-          <p class="alert-desc">Tu vehiculo ha salido del recinto exitosamente. El espacio quedo libre y ya puedes generar una nueva solicitud.</p>
+          <h4 class="alert-title">{{ ultimaReservaNotificacion.title }}</h4>
+          <p class="alert-desc">{{ ultimaReservaNotificacion.description }}</p>
         </div>
       </div>
 
@@ -293,6 +288,33 @@
           </div>
         </div>
 
+        <div class="filtros-historial">
+          <div class="filtro-group">
+            <label class="filtro-label">Estado</label>
+            <select class="filtro-select" [(ngModel)]="filterEstado">
+              <option value="">Todos</option>
+              <option value="PENDIENTE">Pendiente</option>
+              <option value="CONFIRMADA">Confirmada</option>
+              <option value="CANCELADA">Cancelada</option>
+              <option value="FINALIZADA">Finalizada</option>
+            </select>
+          </div>
+
+          <div class="filtro-group">
+            <label class="filtro-label">Desde</label>
+            <input class="filtro-input" type="date" [(ngModel)]="filterFechaDesde">
+          </div>
+
+          <div class="filtro-group">
+            <label class="filtro-label">Hasta</label>
+            <input class="filtro-input" type="date" [(ngModel)]="filterFechaHasta">
+          </div>
+
+          <button class="btn-limpiar-filtros" *ngIf="hayFiltrosActivos" (click)="limpiarFiltros()">
+            Limpiar filtros
+          </button>
+        </div>
+
         <div class="table-wrapper">
           <table>
             <thead>
@@ -301,22 +323,39 @@
                 <th>Vehiculo</th>
                 <th>Espacio Asignado</th>
                 <th>Estado</th>
+                <th>Accion</th>
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let reserva of reservas">
-                <td>{{ reserva.fecha }}</td>
-                <td>{{ reserva.vehiculo?.placa || '-' }}</td>
-                <td>{{ reserva.espacio?.numero || '-' }}</td>
-                <td><span [class]="getEstadoClass(reserva.estado)">{{ getEstadoLabel(reserva.estado) }}</span></td>
+              <tr *ngFor="let reserva of filteredReservas">
+                <td data-label="Fecha">{{ reserva.fecha }}</td>
+                <td data-label="Vehiculo">{{ reserva.vehiculo?.placa || '-' }}</td>
+                <td data-label="Espacio">{{ reserva.espacio?.numero || '-' }}</td>
+                <td data-label="Estado"><span [class]="getEstadoClass(reserva.estado)">{{ getEstadoLabel(reserva.estado) }}</span></td>
+                <td data-label="">
+                  <button
+                    *ngIf="reserva.estado === 'PENDIENTE' || reserva.estado === 'CONFIRMADA'"
+                    class="btn-cancel"
+                    (click)="cancelarReserva(reserva)"
+                    title="Cancelar reserva"
+                  >
+                    Cancelar
+                  </button>
+                  <span *ngIf="reserva.estado !== 'PENDIENTE' && reserva.estado !== 'CONFIRMADA'">&mdash;</span>
+                </td>
               </tr>
               <tr *ngIf="reservas.length === 0">
-                <td colspan="4">No hay reservas registradas</td>
+                <td data-label="" colspan="5">No hay reservas registradas</td>
+              </tr>
+              <tr *ngIf="reservas.length > 0 && filteredReservas.length === 0">
+                <td data-label="" colspan="5">No hay reservas que coincidan con el filtro</td>
               </tr>
             </tbody>
           </table>
         </div>
       </article>
     </section>
+
+    <app-footer/>
   </main>
 </div>

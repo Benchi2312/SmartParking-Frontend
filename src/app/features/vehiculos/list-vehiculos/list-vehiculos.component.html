@@ -24,11 +24,11 @@
 
     <tbody>
       <tr *ngFor="let v of vehiculos">
-        <td>{{ v.placa }}</td>
-        <td>{{ v.marca | titlecase }}</td>
-        <td>{{ v.modelo | titlecase }}</td>
-        <td *ngIf="isAdmin">{{ v.usuarioNombre || v.usuarioEmail || 'Sin usuario' }}</td>
-        <td class="row-actions" *ngIf="!isAdmin">
+        <td data-label="Placa">{{ v.placa }}</td>
+        <td data-label="Marca">{{ v.marca | titlecase }}</td>
+        <td data-label="Modelo">{{ v.modelo | titlecase }}</td>
+        <td data-label="Usuario" *ngIf="isAdmin">{{ v.usuarioNombre || v.usuarioEmail || 'Sin usuario' }}</td>
+        <td data-label="" class="row-actions" *ngIf="!isAdmin">
           <button class="edit" type="button" (click)="abrirModalEditar(v)" [disabled]="accionesDeshabilitadas(v)">
             Editar
           </button>
@@ -38,7 +38,7 @@
         </td>
       </tr>
       <tr *ngIf="!loading && vehiculos.length === 0">
-        <td [attr.colspan]="isAdmin ? 4 : 4">No hay vehiculos registrados</td>
+        <td [attr.colspan]="isAdmin ? 4 : 4" data-label="">No hay vehiculos registrados</td>
       </tr>
     </tbody>
   </table>
