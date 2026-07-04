@@ -323,6 +323,7 @@
                 <th>Vehiculo</th>
                 <th>Espacio Asignado</th>
                 <th>Estado</th>
+                <th>Costo</th>
                 <th>Accion</th>
               </tr>
             </thead>
@@ -332,6 +333,10 @@
                 <td data-label="Vehiculo">{{ reserva.vehiculo?.placa || '-' }}</td>
                 <td data-label="Espacio">{{ reserva.espacio?.numero || '-' }}</td>
                 <td data-label="Estado"><span [class]="getEstadoClass(reserva.estado)">{{ getEstadoLabel(reserva.estado) }}</span></td>
+                <td data-label="Costo">
+                  <span *ngIf="reserva.costoTotal != null">${{ reserva.costoTotal | number:'1.2-2' }}</span>
+                  <span *ngIf="reserva.costoTotal == null">&mdash;</span>
+                </td>
                 <td data-label="">
                   <button
                     *ngIf="reserva.estado === 'PENDIENTE' || reserva.estado === 'CONFIRMADA'"
@@ -345,10 +350,10 @@
                 </td>
               </tr>
               <tr *ngIf="reservas.length === 0">
-                <td data-label="" colspan="5">No hay reservas registradas</td>
+                <td data-label="" colspan="6">No hay reservas registradas</td>
               </tr>
               <tr *ngIf="reservas.length > 0 && filteredReservas.length === 0">
-                <td data-label="" colspan="5">No hay reservas que coincidan con el filtro</td>
+                <td data-label="" colspan="6">No hay reservas que coincidan con el filtro</td>
               </tr>
             </tbody>
           </table>

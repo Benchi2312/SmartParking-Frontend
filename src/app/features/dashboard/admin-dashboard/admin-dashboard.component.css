@@ -127,6 +127,11 @@ tbody tr:last-child td {
   color: #b91c1c;
 }
 
+.badge-finished {
+  background: #e0e7ff;
+  color: #4338ca;
+}
+
 .reserva-actions {
   display: flex;
   gap: 8px;
@@ -201,6 +206,107 @@ tbody tr:last-child td {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.card-highlight {
+  background: linear-gradient(135deg, #065f46, #047857);
+  color: #fff;
+}
+.card-highlight p {
+  color: rgba(255, 255, 255, 0.8);
+}
+.card-highlight h2 {
+  color: #fff;
+}
+
+.tarifa-panel {
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.05);
+  margin-top: 28px;
+}
+
+.tarifa-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: end;
+}
+
+.tarifa-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tarifa-label {
+  font-size: 12px;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+}
+
+.tarifa-valor {
+  font-size: 28px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.tarifa-desc {
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.tarifa-editor {
+  display: flex;
+  gap: 10px;
+  align-items: end;
+  flex-wrap: wrap;
+}
+
+.tarifa-editor label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tarifa-editor label span {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.tarifa-input {
+  width: 120px;
+  padding: 10px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.btn-guardar-tarifa {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  background: #2563eb;
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-guardar-tarifa:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.btn-guardar-tarifa:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 @media (max-width: 900px) {

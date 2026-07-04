@@ -522,6 +522,11 @@
   color: #b91c1c;
 }
 
+.badge-finished {
+  background: #e0e7ff;
+  color: #4338ca;
+}
+
 .detail-list,
 .info-grid {
   display: grid;
