@@ -3,12 +3,13 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { CrearEspacioRequest, Espacio } from '../models/espacio.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EspacioService {
-  private readonly apiUrl = 'http://localhost:8080/api/espacios';
+  private readonly apiUrl = `${environment.apiUrl}/api/espacios`;
 
   constructor(private http: HttpClient) {}
 
